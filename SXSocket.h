@@ -65,7 +65,7 @@ typedef struct _SXSocket {
     bool blocking;
 
     struct sockaddr_storage addr;
-    unsigned int referenceCount;
+    unsigned int ref_count;
     
 } sx_socket_t;
 
@@ -94,10 +94,10 @@ SXSocketRef SXCreateClientSocket(const char * ipaddr,
 #define SXCreateSocketUDPIPv6(ipaddr, err_ret) SXCreateClientSocket(#ipaddr, 0, AF_INET6, SOCK_DGARM, 0 &err_ret)
 
 SXError SXSocketSetBlock(SXSocketRef sock, bool block);
-SXError SXSocketSend(SXSocketRef target, const void * payload, size_t length);
-SXError SXRetainSocket(SXSocketRef socket);
-SXError SXReleaseSocket(SXSocketRef socket);
-SXError SXFreeSocket(SXSocketRef socket);
-SXError SXSocketConnect(SXSocketRef socket);
-SXError SXSocketListen(SXSocketRef socket);
+SXError SXSocketSend    (SXSocketRef target, const void * payload, size_t length);
+SXError SXRetainSocket  (SXSocketRef socket);
+SXError SXReleaseSocket (SXSocketRef socket);
+SXError SXFreeSocket    (SXSocketRef socket);
+SXError SXSocketConnect (SXSocketRef socket);
+SXError SXSocketListen  (SXSocketRef socket);
 #endif /* SXSocket_h */

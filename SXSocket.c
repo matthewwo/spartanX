@@ -64,18 +64,18 @@ unsigned getScopeForIp(const char *ip)
 
 SXError SXRetainSocket(SXSocketRef socket)
 {
-    if (socket->referenceCount == SX_OBJECT_IS_WEAK)
+    if (socket->ref_count == SX_OBJECT_IS_WEAK)
         return SX_SUCCESS;
-    ++socket->referenceCount;
+    ++socket->ref_count;
     return SX_SUCCESS;
 }
 
 SXError SXReleaseSocket(SXSocketRef socket)
 {
-    if (socket->referenceCount == SX_OBJECT_IS_WEAK)
+    if (socket->ref_count == SX_OBJECT_IS_WEAK)
         return SX_SUCCESS;
-    --socket->referenceCount;
-    if (socket->referenceCount == 0)
+    --socket->ref_count;
+    if (socket->ref_count == 0)
         return SXFreeSocket(socket);
     return SX_SUCCESS;
 }
@@ -101,7 +101,7 @@ SXSocketRef SXCreateServerSocket(short port,
     sockPtr->domain = domain;
     sockPtr->type = type;
     sockPtr->protocol = protocol;
-    sockPtr->referenceCount = 1;
+    sockPtr->ref_count = 1;
     sockPtr->port = port;
     socklen_t addrlen;
     
@@ -165,7 +165,7 @@ SXSocketRef SXCreateClientSocket(const char * ipaddr,
     sockPtr->protocol = protocol;
     sockPtr->type = type;
     sockPtr->domain = domain;
-    sockPtr->referenceCount = 1;
+    sockPtr->ref_count = 1;
     socklen_t addrlen;
 
     memset(&sockPtr->addr, 0, sizeof(struct sockaddr_storage));

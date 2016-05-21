@@ -37,7 +37,7 @@
 SXQueueRef SXCreateQueue(SXSocketRef socket, dispatch_queue_t queue, SXError * err_ret)
 {
     SXQueueRef _queue = (SXQueueRef)calloc(1, sizeof(sx_queue_t));
-    _queue->referenceCount = 1;
+    _queue->ref_count = 1;
     _queue->gcd_queue = queue;
     
     if (socket == NULL) {
@@ -84,18 +84,18 @@ SXError SXFreeQueue(SXQueueRef queue)
 }
 SXError SXRetainQueue(SXQueueRef queue)
 {
-    if (queue->referenceCount == SX_OBJECT_IS_WEAK)
+    if (queue->ref_count == SX_OBJECT_IS_WEAK)
         return SX_SUCCESS;
-    ++queue->referenceCount;
+    ++queue->ref_count;
     return SX_SUCCESS;
 }
 
 SXError SXReleaseQueue(SXQueueRef queue)
 {
-    if (queue->referenceCount == SX_OBJECT_IS_WEAK)
+    if (queue->ref_count == SX_OBJECT_IS_WEAK)
         return SX_SUCCESS;
-    --queue->referenceCount;
-    if (queue->referenceCount == 0)
+    --queue->ref_count;
+    if (queue->ref_count == 0)
         return SXFreeQueue(queue);
     return SX_SUCCESS;
 }

@@ -56,7 +56,7 @@ SXServerRef SXCreateServer(sx_server_setup setup, SXError * err_ret, block_SXSer
     }
     
     server->dataHandler_block = msg_handl;
-    server->referenceCount = 1;
+    server->ref_count = 1;
     server->backlog = setup.backlog;
     server->dataSize = setup.dataSize;
     server->max_guest = setup.max_guest;
@@ -93,7 +93,7 @@ SXServerRef SXCreateServer_f(sx_server_setup setup, SXError * err_ret, fptr_SXSe
     }
     
     server->dataHandler_fptr = msg_handl;
-    server->referenceCount = 1;
+    server->ref_count = 1;
     server->backlog = setup.backlog;
     server->dataSize = setup.dataSize;
     server->max_guest = setup.max_guest;
@@ -187,18 +187,18 @@ void SXServerSetFnPtrDidKill
 
 SXError SXRetainServer(SXServerRef server)
 {
-    if (server->referenceCount == SX_OBJECT_IS_WEAK)
+    if (server->ref_count == SX_OBJECT_IS_WEAK)
         return SX_SUCCESS;
-    ++server->referenceCount;
+    ++server->ref_count;
     return SX_SUCCESS;
 }
 
 SXError SXReleaseServer(SXServerRef server)
 {
-    if (server->referenceCount == SX_OBJECT_IS_WEAK)
+    if (server->ref_count == SX_OBJECT_IS_WEAK)
         return SX_SUCCESS;
-    --server->referenceCount;
-    if (server->referenceCount == 0)
+    --server->ref_count;
+    if (server->ref_count == 0)
         return SXFreeServer(server);
     return SX_SUCCESS;
 }
@@ -221,7 +221,7 @@ SXError SXFreeServer(SXServerRef server)
 
 SXError SXSuspendServer(SXServerRef server)
 {
-    if (server== NULL || server->referenceCount == 0)
+    if (server== NULL || server->ref_count == 0)
         return SX_ERROR_INVALID_SERVER;
     
     sx_status_t a[2] = {sx_status_idle, sx_status_running};
@@ -233,7 +233,7 @@ SXError SXSuspendServer(SXServerRef server)
 
 SXError SXResumeServer(SXServerRef server)
 {
-    if (server== NULL || server->referenceCount == 0)
+    if (server== NULL || server->ref_count == 0)
         return SX_ERROR_INVALID_SERVER;
     
     SX_RETURN_ERR(SXCheckStatus(server->status, sx_status_suspend));
@@ -244,7 +244,7 @@ SXError SXResumeServer(SXServerRef server)
 
 SXError SXKillServer(SXServerRef server)
 {
-    if (server== NULL || server->referenceCount == 0)
+    if (server== NULL || server->ref_count == 0)
         return SX_ERROR_INVALID_SERVER;
     
     if (server->status == sx_status_suspend) SXResumeServer(server);
@@ -373,7 +373,7 @@ SXError SXServerStart(SXServerRef server,
             dispatch_async(r_queue, ^{
                 size_t s = 1;
                 sx_socket_t socket = sock;
-                socket.referenceCount = SX_OBJECT_IS_WEAK; // weak pointer
+                socket.ref_count = SX_OBJECT_IS_WEAK; // weak pointer
                 SXQueueRef queue = SXCreateQueue((SXSocketRef)&sock, r_queue, NULL);
                 queue->status = sx_status_running;
                 
@@ -500,7 +500,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                     if (!(count >= server->max_guest))
                     {
                         SXSocketRef socket = (SXSocketRef)calloc(1, sizeof(sx_socket_t));
-                        socket->referenceCount = 1;
+                        socket->ref_count = 1;
                         socket->domain = AF_UNSPEC;
                         if ((socket->sockfd = accept(server->socket->sockfd,
                                                     (struct sockaddr *)&socket->addr,

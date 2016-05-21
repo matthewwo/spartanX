@@ -194,7 +194,7 @@ typedef struct sx_server
     SXQueueRef * queues;
     
     uint8_t status;
-    unsigned int referenceCount;
+    unsigned int ref_count;
 } sx_server_t ;
 
 
