@@ -75,7 +75,7 @@ int main(int argc, const char * argv[]) {
 }
 ```
 
-Or use lamda expression when you compile it in C++ 1x
+Or use lamda expression when you compile it with C++ 1x
 ```C++
 #include "spartanX.h"
 
