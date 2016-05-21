@@ -37,7 +37,7 @@ SXServerRef SXCreateServer(sx_server_setup setup, SXError * err_ret, block_SXSer
     SXError tmp_err;
     SXServerRef server = (SXServerRef)calloc(1, sizeof(sx_server_t));
     
-    short port_num = setup.port;
+    sx_int16 port_num = setup.port;
     
     switch (setup.domain) {
     case 1:
@@ -74,7 +74,7 @@ SXServerRef SXCreateServer_f(sx_server_setup setup, SXError * err_ret, fptr_SXSe
     SXError tmp_err;
     SXServerRef server = (SXServerRef)calloc(1, sizeof(sx_server_t));
     
-    short port_num = setup.port;
+    sx_int16 port_num = setup.port;
     
     switch (setup.domain) {
         case 1:
@@ -187,7 +187,7 @@ void SXServerSetFnPtrDidKill
 
 SXError SXRetainServer(SXServerRef server)
 {
-    if (server->ref_count == SX_OBJECT_IS_WEAK)
+    if (server->ref_count == sx_weak_object)
         return SX_SUCCESS;
     ++server->ref_count;
     return SX_SUCCESS;
@@ -195,7 +195,7 @@ SXError SXRetainServer(SXServerRef server)
 
 SXError SXReleaseServer(SXServerRef server)
 {
-    if (server->ref_count == SX_OBJECT_IS_WEAK)
+    if (server->ref_count == sx_weak_object)
         return SX_SUCCESS;
     --server->ref_count;
     if (server->ref_count == 0)
@@ -309,12 +309,12 @@ SXError SXServerStart_f(SXServerRef server,
 
 #ifdef __BLOCKS__
 #define use_block(fname, args) server->CAT(fname, _block) args
-#define envl(fname, args) (use_block_handler ? use_block(fname, args) : use_fn(fname, args))
+#define eval(fname, args) (use_block_handler ? use_block(fname, args) : use_fn(fname, args))
 #else
-#define envl(fname, args) (use_fn(fname, args))
+#define eval(fname, args) (use_fn(fname, args))
 #endif
 
-#define envl_if_exist(fname, args) if (has_handler(fname)) envl(fname, args);
+#define eval_if_exist(fname, args) if (has_handler(fname)) eval(fname, args);
 
 
 #ifdef __DISPATCH_PUBLIC__
@@ -324,11 +324,9 @@ SXError SXServerStart(SXServerRef server,
                       block_queue_generate_policy operatingQueue,
                       bool use_block_handler)
 {
-#ifndef __XUnsafe__
     if (server== NULL) return SX_ERROR_INVALID_SERVER;
     if (preprocessQueue == NULL) return SX_ERROR_CREATE_THREAD;
     if (operatingQueue == NULL) return SX_ERROR_CREATE_THREAD;
-#endif
     __block SXError err;
     
     if (server->socket->type == SOCK_DGRAM)
@@ -340,7 +338,7 @@ SXError SXServerStart(SXServerRef server,
     
     dispatch_async(p_queue, ^{
         server->status = sx_status_running;
-        envl_if_exist(didStart, (server));
+        eval_if_exist(didStart, (server));
         __block int count = 0;
         
         if (!server->socket->blocking)
@@ -359,7 +357,6 @@ SXError SXServerStart(SXServerRef server,
             sx_socket_t sock;
             
             if ((sock.sockfd = accept(server->socket->sockfd, (struct sockaddr *)&sock.addr, (socklen_t *)&sock.addr.ss_len)) == -1) {
-                printf("%d\n", server->socket->sockfd);
                 perror("accept");
                 err = SX_ERROR_SYS_ACCEPT;
                 continue;
@@ -368,7 +365,7 @@ SXError SXServerStart(SXServerRef server,
             sock.domain = AF_UNSPEC;
             
             if (has_handler(shouldConnect))
-                if (!envl(shouldConnect, (server, (SXSocketRef)&sock)))
+                if (!eval(shouldConnect, (server, (SXSocketRef)&sock)))
                     continue;
             
             
@@ -377,18 +374,18 @@ SXError SXServerStart(SXServerRef server,
             dispatch_async(r_queue, ^{
                 size_t s = 1;
                 sx_socket_t socket = sock;
-                socket.ref_count = SX_OBJECT_IS_WEAK; // weak pointer
+                socket.ref_count = sx_weak_object; // weak pointer
                 SXQueueRef queue = SXCreateQueue((SXSocketRef)&sock, r_queue, NULL);
                 queue->status = sx_status_running;
                 
                 SXRetainServer(server);
     
                 bool suspended = false;
-                envl_if_exist(didConnect, (server, queue));
-                char buf[server->dataSize];
+                eval_if_exist(didConnect, (server, queue));
+                sx_byte buf[server->dataSize];
                 
                 do {
-                    memset(buf, 0, sizeof(char) * server->dataSize);
+                    memset(buf, 0, sizeof(sx_byte) * server->dataSize);
                     
                     if (server->status != sx_status_running)
                         queue->status = server->status;
@@ -399,17 +396,17 @@ SXError SXServerStart(SXServerRef server,
                         s = recv(sock.sockfd, buf, server->dataSize, 0);
                         if (s == -1)
                             goto exit;
-                        s = envl(dataHandler, (server, queue, buf, s));
+                        s = eval(dataHandler, (server, queue, buf, s));
                         break;
                         
                     case sx_status_resuming:
                         queue->status = sx_status_running;
-                        envl_if_exist(didResume, (server, queue));
+                        eval_if_exist(didResume, (server, queue));
                         break;
                         
                     case sx_status_suspend: {
                         if (!suspended)
-                            envl_if_exist(willSuspend, (server, queue));
+                            eval_if_exist(willSuspend, (server, queue));
                         suspended = true;
                         
                         
@@ -424,7 +421,7 @@ SXError SXServerStart(SXServerRef server,
                             
                         case sx_status_resuming:
                         case sx_status_running:
-                            s = envl(dataHandler, (server, queue, buf, len));
+                            s = eval(dataHandler, (server, queue, buf, len));
                             break;
                             
                         default:
@@ -435,7 +432,7 @@ SXError SXServerStart(SXServerRef server,
                     case sx_status_should_terminate:
                         
                     case sx_status_idle:
-                        envl_if_exist(willKill, (server, queue));
+                        eval_if_exist(willKill, (server, queue));
                         goto exit;
                         
                     default:
@@ -446,7 +443,7 @@ SXError SXServerStart(SXServerRef server,
                 
             exit:
                 close(socket.sockfd);
-                envl_if_exist(didDisconnect, (server, queue));
+                eval_if_exist(didDisconnect, (server, queue));
                 SXReleaseServer(server);
                 SXReleaseQueue(queue);
                 --count;
@@ -456,7 +453,7 @@ SXError SXServerStart(SXServerRef server,
         server->status = sx_status_idle;
         SXReleaseServer(server);
         
-        envl_if_exist(didKill, (server));
+        eval_if_exist(didKill, (server));
         
     });
     return SX_SUCCESS;
@@ -471,7 +468,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
     dispatch_async(gcd_queue, ^{
         SXError err;
         server->status = sx_status_running;
-        envl_if_exist(didStart, (server));
+        eval_if_exist(didStart, (server));
         size_t count = 0, n_ev_changes;
         int kq;
         
@@ -525,8 +522,8 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                     SXQueueRef queue = (SXQueueRef)events[i].udata;
                     size_t s;
                     bool suspended;
-                    char buf[server->dataSize];
-                    memset(buf, 0, sizeof(char) * server->dataSize);
+                    sx_byte buf[server->dataSize];
+                    memset(buf, 0, sizeof(sx_byte) * server->dataSize);
                     
                     if (server->status != sx_status_running)
                         queue->status = server->status;
@@ -534,7 +531,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                         case sx_status_running:
                             s = recv(queue->sock->sockfd, buf, server->dataSize, 0);
                             if (s != -1) {
-                                if ((s = envl(dataHandler, (server, queue, buf, s))) == -1)
+                                if ((s = eval(dataHandler, (server, queue, buf, s))) == -1)
                                     goto exit;
                                 break;
                             } else {
@@ -542,12 +539,12 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                             }
                         case sx_status_resuming:
                             queue->status = sx_status_running;
-                            envl_if_exist(didResume, (server, queue));
+                            eval_if_exist(didResume, (server, queue));
                             break;
                             
                         case sx_status_suspend: {
                             if (!suspended)
-                                envl_if_exist(willSuspend, (server, queue));
+                                eval_if_exist(willSuspend, (server, queue));
                             suspended = true;
                             
                             
@@ -562,7 +559,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                                     
                                 case sx_status_resuming:
                                 case sx_status_running:
-                                    s = envl(dataHandler, (server, queue, buf, len));
+                                    s = eval(dataHandler, (server, queue, buf, len));
                                     break;
                                     
                                 default:
@@ -572,7 +569,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                         case sx_status_should_terminate:
                             
                         case sx_status_idle:
-                            envl_if_exist(willKill, (server, queue));
+                            eval_if_exist(willKill, (server, queue));
                             goto exit;
                             
                         default:
@@ -589,7 +586,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                     kevent64(kq, &change, 1, NULL, 0, 0, 0);
                     close(queue->sock->sockfd);
                     SXReleaseQueue(queue);
-                    envl_if_exist(didDisconnect, (server, queue));
+                    eval_if_exist(didDisconnect, (server, queue));
 
                     --count;
                 }
@@ -605,6 +602,6 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
 #undef SERVER_HAS_STATUS
 #undef use_block
 #undef use_fn
-#undef envl
-#undef envl_if_exist
+#undef eval
+#undef eval_if_exist
 #undef has_handler

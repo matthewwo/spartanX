@@ -46,15 +46,12 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 #include <errno.h>
+
+#include "sx_global.h"
 #include "SXError.h"
 
 #define sockaddr_in(addr) (*((struct sockaddr_in*)&addr))
 #define sockaddr_in6(addr) (*((struct sockaddr_in6*)&addr))
-
-#ifndef __OBJC__
-#define __unsafe_unretained
-#define __bridge
-#endif
 
 typedef struct _SXSocket {
     int sockfd;

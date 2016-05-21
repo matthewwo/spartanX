@@ -31,6 +31,8 @@
 
 #include "SXSocket.h"
 
+
+// From Stackoverflow
 unsigned getScopeForIp(const char *ip)
 {
     struct ifaddrs *addrs;
@@ -64,7 +66,7 @@ unsigned getScopeForIp(const char *ip)
 
 SXError SXRetainSocket(SXSocketRef socket)
 {
-    if (socket->ref_count == SX_OBJECT_IS_WEAK)
+    if (socket->ref_count == sx_weak_object)
         return SX_SUCCESS;
     ++socket->ref_count;
     return SX_SUCCESS;
@@ -72,7 +74,7 @@ SXError SXRetainSocket(SXSocketRef socket)
 
 SXError SXReleaseSocket(SXSocketRef socket)
 {
-    if (socket->ref_count == SX_OBJECT_IS_WEAK)
+    if (socket->ref_count == sx_weak_object)
         return SX_SUCCESS;
     --socket->ref_count;
     if (socket->ref_count == 0)
@@ -205,7 +207,7 @@ SXError SXSocketSetBlock(SXSocketRef sock, bool block)
     int flags;
     if ((flags = fcntl(sock->sockfd, F_GETFL, 0)) < 0)
         return SX_ERROR_SYS_FCNTL;
-    flags = block ? (flags&~O_NONBLOCK) : (flags|O_NONBLOCK);
+    flags = block ? (flags &~ O_NONBLOCK) : (flags | O_NONBLOCK);
     if ((flags = fcntl(sock->sockfd, F_SETFL, flags)) < 0)
         return SX_ERROR_SYS_FCNTL;
     sock->blocking = block;

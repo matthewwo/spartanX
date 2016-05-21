@@ -65,13 +65,6 @@ typedef enum SXError
     SX_ERROR_CREATE_QUEUE               = -41
 } SXError;
 
-#ifndef __OBJC__
-#define __unsafe_unretained
-#define __bridge
-#endif
-
-#define SX_OBJECT_IS_WEAK -410
-
 #define ERR_RET(ret) if (err_ret != NULL) *err_ret = ret
 #define SX_RETURN_ERR(operation)\
 SXError ________err_ = operation;\

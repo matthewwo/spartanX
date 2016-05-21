@@ -38,6 +38,7 @@
 extern "C" {
 #endif
 #include <unistd.h>
+#include "sx_global.h"
 #include "SXQueue.h"
 #include "SXError.h"
 #include "SXSocket.h"
@@ -60,11 +61,6 @@ extern "C" {
 #include <pthread.h>
 
 typedef struct sx_server * SXServerRef;
-
-#ifndef __OBJC__
-#define __unsafe_unretained
-#define __bridge
-#endif
 
 #define FRTR_N(name) fptr_##name
 
@@ -97,10 +93,6 @@ typedef struct sx_server * SXServerRef;
 BLOCK(ret, name, args);\
 FPTR(ret, name, args);\
 SWIFT_N(name);
-
-#define hdls(name)\
-    BLOCK_N(name) block;\
-    FRTR_N(name) * fn;
 
 hDeclare(size_t,
          SXServerDidReceive,
@@ -268,13 +260,9 @@ SXError SXServerStart2(SXServerRef server,
 SXError SXRetainServer  (SXServerRef);
 SXError SXReleaseServer (SXServerRef);
 SXError SXFreeServer    (SXServerRef);
-
 SXError SXSuspendServer (SXServerRef);
 SXError SXResumeServer  (SXServerRef);
 SXError SXKillServer    (SXServerRef);
 
 
-#ifdef __cplusplus
-
-#endif
 #endif /* SXServer_h */

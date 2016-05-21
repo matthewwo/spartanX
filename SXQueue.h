@@ -36,10 +36,6 @@
 #include "SXError.h"
 #include <dispatch/dispatch.h>
 
-#define containsFlag(options, option) ((options & option) == option)
-
-typedef unsigned int sx_status_t;
-
 SXError SXCheckStatus(sx_status_t current, sx_status_t required);
 
 SXError SXCheckCompatibleStatus(sx_status_t current, sx_status_t * array, size_t count);

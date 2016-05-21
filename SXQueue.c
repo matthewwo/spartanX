@@ -84,7 +84,7 @@ SXError SXFreeQueue(SXQueueRef queue)
 }
 SXError SXRetainQueue(SXQueueRef queue)
 {
-    if (queue->ref_count == SX_OBJECT_IS_WEAK)
+    if (queue->ref_count == sx_weak_object)
         return SX_SUCCESS;
     ++queue->ref_count;
     return SX_SUCCESS;
@@ -92,7 +92,7 @@ SXError SXRetainQueue(SXQueueRef queue)
 
 SXError SXReleaseQueue(SXQueueRef queue)
 {
-    if (queue->ref_count == SX_OBJECT_IS_WEAK)
+    if (queue->ref_count == sx_weak_object)
         return SX_SUCCESS;
     --queue->ref_count;
     if (queue->ref_count == 0)
