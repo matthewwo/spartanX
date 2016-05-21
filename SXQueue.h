@@ -28,8 +28,8 @@
 //
 //  Created by yuuji on 5/9/16.
 //  Copyright © 2016 yuuji. All rights reserved.
-#ifndef SXRuntime_h
-#define SXRuntime_h
+#ifndef SXQueue_h
+#define SXQueue_h
 
 #include <stdio.h>
 #include "SXSocket.h"
@@ -73,4 +73,4 @@ SXError SXFreeQueue(SXQueueRef queue);
 SXError SXRetainQueue(SXQueueRef queue);
 SXError SXReleaseQueue(SXQueueRef queue);
 
-#endif /* SXRuntime_h */
+#endif /* SXQueue_h */
