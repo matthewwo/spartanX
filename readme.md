@@ -101,6 +101,7 @@ There are several different handlers available, which will occurs at different s
  - didResume
  - willKill
  - didKill
+ 
 ### Development
 
 SpartanX is still under development. Please feel free to try out and report bugs.
