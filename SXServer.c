@@ -254,7 +254,11 @@ SXError SXKillServer(SXServerRef server)
     
     server->status = sx_status_should_terminate;
     close(server->socket->sockfd);
-    server->socket = SXCreateServerSocket(server->socket->port, server->socket->domain, server->socket->type, server->socket->protocol, NULL);
+    server->socket = SXCreateServerSocket(server->socket->port,
+                                          server->socket->domain,
+                                          server->socket->type,
+                                          server->socket->protocol,
+                                          NULL);
     return SX_SUCCESS;
 }
 
@@ -391,51 +395,51 @@ SXError SXServerStart(SXServerRef server,
                     
                     switch (queue->status)
                     {
-                        case sx_status_running:
-                            s = recv(sock.sockfd, buf, server->dataSize, 0);
-                            if (s == -1)
-                                goto exit;
-                            s = envl(dataHandler, (server, queue, buf, s));
-                            break;
+                    case sx_status_running:
+                        s = recv(sock.sockfd, buf, server->dataSize, 0);
+                        if (s == -1)
+                            goto exit;
+                        s = envl(dataHandler, (server, queue, buf, s));
+                        break;
+                        
+                    case sx_status_resuming:
+                        queue->status = sx_status_running;
+                        envl_if_exist(didResume, (server, queue));
+                        break;
+                        
+                    case sx_status_suspend: {
+                        if (!suspended)
+                            envl_if_exist(willSuspend, (server, queue));
+                        suspended = true;
+                        
+                        
+                        size_t len = recv(sock.sockfd, buf, server->dataSize, 0);
+                        if (len == 0 || len == -1) goto exit;
+                        
+                        // check the status when the message recvieved
+                        switch (queue->status) {
+                        case sx_status_should_terminate:
+                        case sx_status_idle:
+                            goto exit;
                             
                         case sx_status_resuming:
-                            queue->status = sx_status_running;
-                            envl_if_exist(didResume, (server, queue));
+                        case sx_status_running:
+                            s = envl(dataHandler, (server, queue, buf, len));
                             break;
-                            
-                        case sx_status_suspend: {
-                            if (!suspended)
-                                envl_if_exist(willSuspend, (server, queue));
-                            suspended = true;
-                            
-                            
-                            size_t len = recv(sock.sockfd, buf, server->dataSize, 0);
-                            if (len == 0 || len == -1) goto exit;
-                            
-                            // check the status when the message recvieved
-                            switch (queue->status) {
-                                case sx_status_should_terminate:
-                                case sx_status_idle:
-                                    goto exit;
-                                    
-                                case sx_status_resuming:
-                                case sx_status_running:
-                                    s = envl(dataHandler, (server, queue, buf, len));
-                                    break;
-                                    
-                                default:
-                                    break;
-                            }
-                            break;
-                        }
-                        case sx_status_should_terminate:
-                            
-                        case sx_status_idle:
-                            envl_if_exist(willKill, (server, queue));
-                            goto exit;
                             
                         default:
                             break;
+                        }
+                        break;
+                    }
+                    case sx_status_should_terminate:
+                        
+                    case sx_status_idle:
+                        envl_if_exist(willKill, (server, queue));
+                        goto exit;
+                        
+                    default:
+                        break;
                     }
                     
                 } while (s > 0);

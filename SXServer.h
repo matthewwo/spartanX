@@ -45,9 +45,9 @@ extern "C" {
 }
 #endif
 
-#if defined(__APPLE__) || defined(__SX___)
-    #include <dispatch/dispatch.h>
-#endif
+
+#include <dispatch/dispatch.h>
+
 
 #if defined(__FreeBSD__) || defined(__BSD__) || defined(__APPLE__)
     #include <sys/event.h>

@@ -61,16 +61,16 @@ typedef struct sx_queue
     __unsafe_unretained dispatch_queue_t gcd_queue;
     SXSocketRef sock;
     sx_status_t status;
-    unsigned int referenceCount;
+    unsigned int ref_count;
 } sx_queue_t;
 
 typedef struct sx_queue * SXQueueRef;
 
-SXQueueRef SXCreateQueue(SXSocketRef socket, dispatch_queue_t queue, SXError * err_ret);
-SXError SXSuspendQueue(SXQueueRef queue);
-SXError SXResumeQueue(SXQueueRef queue);
-SXError SXFreeQueue(SXQueueRef queue);
-SXError SXRetainQueue(SXQueueRef queue);
-SXError SXReleaseQueue(SXQueueRef queue);
+SXQueueRef  SXCreateQueue   (SXSocketRef socket, dispatch_queue_t queue, SXError * err_ret);
+SXError     SXSuspendQueue  (SXQueueRef queue);
+SXError     SXResumeQueue   (SXQueueRef queue);
+SXError     SXFreeQueue     (SXQueueRef queue);
+SXError     SXRetainQueue   (SXQueueRef queue);
+SXError     SXReleaseQueue  (SXQueueRef queue);
 
 #endif /* SXQueue_h */
