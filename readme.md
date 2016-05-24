@@ -9,7 +9,7 @@ SpartanX is an extremely easy to use asynchronous socket programming framework d
  - ability to manage and host multiple different services
  - ability to use GPU (OpenCL) directly to process connections. (OS X only)
  - low latency and a lot of control over the connection cycle, for example discrete computing over local network.
- - on-demand server capability, for example a temporary web-server/key server/verification server 
+ - ability to temporarily enable  server capability, for example a temporary web-server/key server/verification server 
 
 SpartanX is build directly on top of UNIX socket, and use libdispatch as its threading library. Therefore, clang (with -fblocks enabled) and libdispatch is required in order to build SpartanX. 
 # Structure
