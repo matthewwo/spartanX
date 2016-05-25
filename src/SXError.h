@@ -33,6 +33,7 @@
 #define SXError_h
 
 #include <stdio.h>
+#include <limits.h>
 
 typedef enum SXError
 {

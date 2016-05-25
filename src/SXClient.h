@@ -32,7 +32,4 @@
 #ifndef SXClient_h
 #define SXClient_h
 
-#include "SXSocket.h"
-#include "SXError.h"
-
 #endif /* SXClient_h */

@@ -30,4 +30,3 @@
 //  Copyright © 2016 yuuji. All rights reserved.
 
 #include "SXClient.h"
-

@@ -57,6 +57,8 @@ typedef struct sx_queue
     __unsafe_unretained dispatch_queue_t gcd_queue;
     SXSocketRef sock;
     sx_status_t status;
+    void * udata;
+    void * udata2;
     unsigned int ref_count;
 } sx_queue_t;
 

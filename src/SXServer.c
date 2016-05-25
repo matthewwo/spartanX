@@ -65,7 +65,8 @@ SXServerRef SXCreateServer(sx_server_setup setup, SXError * err_ret, block_SXSer
     tmp_err = SX_SUCCESS;
     
 exit:
-    *err_ret = tmp_err;
+    if (err_ret != NULL)
+        *err_ret = tmp_err;
     return server;
 }
 
@@ -354,6 +355,7 @@ SXError SXServerStart(SXServerRef server,
             if (count >= server->max_guest)
                 continue;
             
+            ++count;
             sx_socket_t sock;
             
             if ((sock.sockfd = accept(server->socket->sockfd, (struct sockaddr *)&sock.addr, (socklen_t *)&sock.addr.ss_len)) == -1) {

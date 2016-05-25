@@ -49,6 +49,7 @@
 
 #include "sx_global.h"
 #include "SXError.h"
+//#include "SXClient.h"
 
 #define sockaddr_in(addr) (*((struct sockaddr_in*)&addr))
 #define sockaddr_in6(addr) (*((struct sockaddr_in6*)&addr))
