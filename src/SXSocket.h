@@ -32,11 +32,6 @@
 #ifndef SXSocket_h
 #define SXSocket_h
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <stdbool.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -49,7 +44,6 @@
 
 #include "sx_global.h"
 #include "SXError.h"
-//#include "SXClient.h"
 
 #define sockaddr_in(addr) (*((struct sockaddr_in*)&addr))
 #define sockaddr_in6(addr) (*((struct sockaddr_in6*)&addr))
@@ -78,8 +72,10 @@ SXSocketRef SXCreateServerSocket(short port,
 #define SXCreateServerSocketTCPIPv4(port, err_ret) SXCreateServerSocket(port, AF_INET, SOCK_STREAM, 0, &err_ret)
 #define SXCreateServerSocketTCPIPv6(port, err_ret) SXCreateServerSocket(port, AF_INET6, SOCK_STREAM, 0, &err_ret)
 
+SXSocketRef SXCreateClientSocketByInfo(struct addrinfo * info, const char * service, SXError * err_ret);
+
 SXSocketRef SXCreateClientSocket(const char * ipaddr,
-                                 short port,
+                                 unsigned short port,
                                  int domain,
                                  int type,
                                  int protocol,

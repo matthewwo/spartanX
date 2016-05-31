@@ -36,7 +36,7 @@
 
 SXQueueRef SXCreateQueue(SXSocketRef socket, dispatch_queue_t queue, SXError * err_ret)
 {
-    SXQueueRef _queue = (SXQueueRef)calloc(1, sizeof(sx_queue_t));
+    SXQueueRef _queue = (SXQueueRef)sx_calloc(1, sizeof(sx_queue_t));
     _queue->ref_count = 1;
     _queue->gcd_queue = queue;
     
@@ -78,7 +78,7 @@ SXError SXFreeQueue(SXQueueRef queue)
 {
     SX_RETURN_ERR(SXReleaseSocket(queue->sock));
     memset(queue, 0, sizeof(queue->sock));
-    free(queue);
+    sx_free(queue);
     queue=NULL;
     return SX_SUCCESS;
 }

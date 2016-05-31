@@ -84,7 +84,8 @@ SXError SXReleaseSocket(SXSocketRef socket)
 
 SXError SXFreeSocket(SXSocketRef socket)
 {
-    free(socket);
+    close(socket->sockfd);
+    sx_free(socket);
     socket = NULL;
     return SX_SUCCESS;
 }
@@ -95,7 +96,7 @@ SXSocketRef SXCreateServerSocket(short port,
                                  int protocol,
                                  SXError * err_ret)
 {
-    SXSocketRef sockPtr = (SXSocketRef)calloc(1, sizeof(sx_socket_t));
+    SXSocketRef sockPtr = (SXSocketRef)sx_calloc(1, sizeof(sx_socket_t));
     
     if (sockPtr == NULL)
         ERR_RET(SX_ERROR_MEM_ALLOC);
@@ -151,16 +152,15 @@ SXSocketRef SXCreateServerSocket(short port,
     return sockPtr;
 }
 
-
 SXSocketRef SXCreateClientSocket(const char * ipaddr,
-                                 short port,
+                                 unsigned short port,
                                  int domain,
                                  int type,
                                  int protocol,
                                  SXError * err_ret)
 {
-    SXSocketRef sockPtr = (SXSocketRef)calloc(1, sizeof(sx_socket_t));
-    
+    SXSocketRef sockPtr = (SXSocketRef)sx_calloc(1, sizeof(sx_socket_t));
+
     if (sockPtr == NULL)
         ERR_RET(SX_ERROR_MEM_ALLOC);
     
@@ -218,7 +218,7 @@ SXError SXSocketConnect(SXSocketRef socket)
 {
     if (connect(socket->sockfd,
                 (struct sockaddr *)&(socket->addr),
-                socket->protocol == AF_INET6 ?
+                socket->domain == AF_INET6 ?
                 sizeof(struct sockaddr_in6) :
                 sizeof(struct sockaddr_in)) == -1)
         return SX_ERROR_SYS_CONNECT;

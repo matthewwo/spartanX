@@ -15,6 +15,46 @@
 #endif
 
 
+#include <dispatch/dispatch.h>
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+    
+    
+#if (defined(__i386__) || defined(__amd64__)) && !defined(SX_STD_ALLOC)
+
+#include <gperftools/tcmalloc.h>
+    
+#define sx_calloc(nmem, size)   tc_calloc(nmem, size)
+#define sx_malloc(size)         tc_malloc(size)
+#define sx_free(obj)            tc_free(obj)
+#define sx_realloc(ptr, size)   tc_realloc(ptr, size)
+    
+#else 
+
+#define sx_calloc(nmem, size)   calloc(nmem, size)
+#define sx_malloc(size)         malloc(size)
+#define sx_free(obj)            free(obj)
+#define sx_realloc(ptr, size)   realloc(ptr, size)
+
+
+#endif
+
+    
+#ifdef __cplusplus
+}
+#endif
+
+
+
 #define contains_flag(options, option) ((options & option) == option)
 
 #define sx_weak_object      410

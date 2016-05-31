@@ -46,10 +46,6 @@ extern "C" {
 }
 #endif
 
-
-#include <dispatch/dispatch.h>
-
-
 #if defined(__FreeBSD__) || defined(__BSD__) || defined(__APPLE__)
     #include <sys/event.h>
 #endif
@@ -183,6 +179,7 @@ typedef struct sx_server
     size_t max_guest;
     bool failable;
     
+    void * udata, * udata1;
     SXQueueRef * queues;
     
     uint8_t status;

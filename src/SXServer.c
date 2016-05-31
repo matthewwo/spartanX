@@ -35,7 +35,7 @@
 SXServerRef SXCreateServer(sx_server_setup setup, SXError * err_ret, block_SXServerDidReceive msg_handl)
 {
     SXError tmp_err;
-    SXServerRef server = (SXServerRef)calloc(1, sizeof(sx_server_t));
+    SXServerRef server = (SXServerRef)sx_calloc(1, sizeof(sx_server_t));
     
     sx_int16 port_num = setup.port;
     
@@ -43,14 +43,14 @@ SXServerRef SXCreateServer(sx_server_setup setup, SXError * err_ret, block_SXSer
     case 1:
         server->socket = SXCreateServerSocket(port_num, AF_INET, SOCK_STREAM, 0, &tmp_err);
         if (tmp_err != SX_SUCCESS) {
-            free(server);
+            sx_free(server);
             goto exit;
         }
         break;
     default:
         server->socket = SXCreateServerSocket(port_num, AF_INET6, SOCK_STREAM, 0, &tmp_err);
         if (tmp_err != SX_SUCCESS) {
-            free(server);
+            sx_free(server);
             goto exit;
         }
     }
@@ -73,7 +73,7 @@ exit:
 SXServerRef SXCreateServer_f(sx_server_setup setup, SXError * err_ret, fptr_SXServerDidReceive msg_handl)
 {
     SXError tmp_err;
-    SXServerRef server = (SXServerRef)calloc(1, sizeof(sx_server_t));
+    SXServerRef server = (SXServerRef)sx_calloc(1, sizeof(sx_server_t));
     
     sx_int16 port_num = setup.port;
     
@@ -81,14 +81,14 @@ SXServerRef SXCreateServer_f(sx_server_setup setup, SXError * err_ret, fptr_SXSe
         case 1:
             server->socket = SXCreateServerSocket(port_num, AF_INET, SOCK_STREAM, 0, &tmp_err);
             if (tmp_err != SX_SUCCESS) {
-                free(server);
+                sx_free(server);
                 goto exit;
             }
             break;
         default:
             server->socket = SXCreateServerSocket(port_num, AF_INET6, SOCK_STREAM, 0, &tmp_err);
             if (tmp_err != SX_SUCCESS) {
-                free(server);
+                sx_free(server);
                 goto exit;
             }
     }
@@ -103,7 +103,8 @@ SXServerRef SXCreateServer_f(sx_server_setup setup, SXError * err_ret, fptr_SXSe
     tmp_err = SX_SUCCESS;
     
 exit:
-    *err_ret = tmp_err;
+    if (err_ret != NULL)
+        *err_ret = tmp_err;
     return server;
 }
 
@@ -212,7 +213,7 @@ SXError SXFreeServer(SXServerRef server)
     SX_RETURN_ERR(SXFreeSocket(server->socket));
     
     memset(server, 0, sizeof(sx_server_t));
-    free(server);
+    sx_free(server);
     server= NULL;
     return SX_SUCCESS;
 }
@@ -502,7 +503,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
 
                     if (!(count >= server->max_guest))
                     {
-                        SXSocketRef socket = (SXSocketRef)calloc(1, sizeof(sx_socket_t));
+                        SXSocketRef socket = (SXSocketRef)sx_calloc(1, sizeof(sx_socket_t));
                         socket->ref_count = 1;
                         socket->domain = AF_UNSPEC;
                         if ((socket->sockfd = accept(server->socket->sockfd,

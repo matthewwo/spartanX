@@ -36,15 +36,13 @@
 extern "C" {
 #endif
     
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-
 #include "sx_global.h"
 #include "SXError.h"
 #include "SXSocket.h"
 #include "SXQueue.h"
-
+#include "SXClient.h"
+#include "SXString.h"
+    
 #ifdef __cplusplus
 }
 #endif
