@@ -8,12 +8,11 @@ else
 	lib = -ltcmalloc -ldispatch -lBlocksRuntime
 endif
 
-	
 darwin: libspartanX.a
-	clang -o proxy -fblocks main.c SXString.c SXVector.c -L"./" -I"./" -lspartanX -L"/usr/local/lib" -I"/usr/local/include" $(lib)
+	clang -O3 -o proxy -fblocks main.c SXString.c SXVector.c -L"./" -I"./" -lspartanX -L"/usr/local/lib" -I"/usr/local/include" $(lib)
 
 bsd: libspartanX.a
-	clang -o proxy -fblocks main.c SXString.c SXVector.c -L"./" -I"./" -lspartanX -L"/usr/local/lib" -I"/usr/local/include" $(lib)
+	clang -O3 -o proxy -fblocks main.c SXString.c SXVector.c -L"./" -I"./" -lspartanX -L"/usr/local/lib" -I"/usr/local/include" $(lib)
 
 libspartanX.a: SXServer.o SXClient.o SXQueue.o SXSocket.o
 	ar rsc libspartanX.a SXClient.o SXServer.o SXQueue.o SXSocket.o

@@ -32,7 +32,6 @@
 #ifndef SXServer_h
 #define SXServer_h
 
-
 #ifdef __cplusplus
 #include <functional>
 extern "C" {
@@ -55,84 +54,86 @@ extern "C" {
 #endif
 
 #include <pthread.h>
+#include "SXEventHandler.h"
 
 typedef struct sx_server * SXServerRef;
 
-#define FRTR_N(name) fptr_##name
-
-#define CAT_I(a,b) a##b
-#define CAT(a,b) CAT_I(a, b)
-
-#ifdef __cplusplus
-
-#define FPTR(ret, name, args) typedef std::function<ret args> fptr_##name;
-#else
-
-#define FPTR(ret, name, args) typedef ret (fptr_##name args);
-#endif
-
-#ifdef __BLOCKS__
-    #define BLOCK_N(name) block_##name
-    #define BLOCK(ret, name, args) typedef ret(^block_##name) args;
-
-    #ifdef __Swift
-        #define SWIFT_N(name) typedef BLOCK_N(name) ##name;
-    #else
-        #define SWIFT_N(name)
-    #endif
-#else
-    #define BLOCK_N(name)
-    #define BLOCK(ret, name, args)
-#endif
-
-#define hDeclare(ret, name, args)\
-BLOCK(ret, name, args);\
-FPTR(ret, name, args);\
-SWIFT_N(name);
-
-hDeclare(size_t,
-         SXServerDidReceive,
-         (SXServerRef server, SXQueueRef queue, void * data, size_t length));
-
-hDeclare(void,
-         SXServerDidStart,
-         (SXServerRef server));
-
-hDeclare(bool,
-         SXServerShouldConnect,
-         (SXServerRef server, SXSocketRef socket));
-
-hDeclare(void,
-         SXServerDidConnect,
-         (SXServerRef server, SXQueueRef queue));
-
-hDeclare(void,
-         SXServerDidDisconnect,
-         (SXServerRef server, SXQueueRef queue));
-
-hDeclare(void,
-         SXServerWillKill,
-         (SXServerRef server,  SXQueueRef const queue));
-
-hDeclare(void,
-         SXServerDidKill, (SXServerRef server));
-
-hDeclare(void,
-         SXServerDidResume,
-         (SXServerRef server, SXQueueRef queue));
-
-hDeclare(void,
-         SXServerWillSuspend,
-         (SXServerRef server, SXQueueRef queue));
-
-hDeclare(dispatch_queue_t,
-         queue_generate_policy,
-         ());
-
-#undef FRTR_N
-#undef FPTR
-#undef BLOCK_N
-#undef BLOCK
+//#define FRTR_N(name) fptr_##name
+//
+//#define CAT_I(a,b) a##b
+//#define CAT(a,b) CAT_I(a, b)
+//
+//#ifdef __cplusplus
+//
+//#define FPTR(ret, name, args) typedef std::function<ret args> fptr_##name;
+//#else
+//
+//#define FPTR(ret, name, args) typedef ret (fptr_##name args);
+//#endif
+//
+//#ifdef __BLOCKS__
+//    #define BLOCK_N(name) block_##name
+//    #define BLOCK(ret, name, args) typedef ret(^block_##name) args;
+//
+//    #ifdef __Swift
+//        #define SWIFT_N(name) typedef BLOCK_N(name) ##name;
+//    #else
+//        #define SWIFT_N(name)
+//    #endif
+//#else
+//    #define BLOCK_N(name)
+//    #define BLOCK(ret, name, args)
+//#endif
+//
+//#define hDeclare(ret, name, args)\
+//BLOCK(ret, name, args);\
+//FPTR(ret, name, args);\
+//SWIFT_N(name);
+//
+//hDeclare(size_t,
+//         SXServerDidReceive,
+//         (SXServerRef server, SXQueueRef queue, void * data, size_t length));
+//
+//hDeclare(void,
+//         SXServerDidStart,
+//         (SXServerRef server));
+//
+//hDeclare(bool,
+//         SXServerShouldConnect,
+//         (SXServerRef server, SXSocketRef socket));
+//
+//hDeclare(void,
+//         SXServerDidConnect,
+//         (SXServerRef server, SXQueueRef queue));
+//
+//hDeclare(void,
+//         SXServerDidDisconnect,
+//         (SXServerRef server, SXQueueRef queue));
+//
+//hDeclare(void,
+//         SXServerWillKill,
+//         (SXServerRef server,  SXQueueRef const queue));
+//
+//hDeclare(void,
+//         SXServerDidKill,
+//         (SXServerRef server));
+//
+//hDeclare(void,
+//         SXServerDidResume,
+//         (SXServerRef server, SXQueueRef queue));
+//
+//hDeclare(void,
+//         SXServerWillSuspend,
+//         (SXServerRef server, SXQueueRef queue));
+//
+//hDeclare(dispatch_queue_t,
+//         queue_generate_policy,
+//         ());
+//
+//#undef FRTR_N
+//#undef FPTR
+//#undef BLOCK_N
+//#undef BLOCK
 
 typedef struct sx_server
 {
@@ -142,12 +143,13 @@ typedef struct sx_server
 
     __unsafe_unretained block_SXServerDidStart      didStart_block;
     __unsafe_unretained block_SXServerShouldConnect shouldConnect_block;
-    __unsafe_unretained block_SXServerDidConnect    didConnect_block;
-    __unsafe_unretained block_SXServerDidReceive    dataHandler_block;
-    __unsafe_unretained block_SXServerDidDisconnect didDisconnect_block;
-    __unsafe_unretained block_SXServerWillSuspend   willSuspend_block;
-    __unsafe_unretained block_SXServerDidResume     didResume_block;
-    __unsafe_unretained block_SXServerWillKill      willKill_block;
+//    __unsafe_unretained block_SXServerDidConnect    didConnect_block;
+//    __unsafe_unretained block_SXServerDidReceive    dataHandler_block;
+//    __unsafe_unretained block_SXServerDidDisconnect didDisconnect_block;
+//    __unsafe_unretained block_SXServerWillSuspend   willSuspend_block;
+//    __unsafe_unretained block_SXServerDidResume     didResume_block;
+//    __unsafe_unretained block_SXServerWillKill      willKill_block;
+    SXServerHandlers_block;
     __unsafe_unretained block_SXServerDidKill       didKill_block;
     
 #endif
@@ -155,22 +157,24 @@ typedef struct sx_server
 #ifdef __cplusplus
     fptr_SXServerDidStart       didStart_fptr;
     fptr_SXServerShouldConnect  shouldConnect_fptr;
-    fptr_SXServerDidConnect     didConnect_fptr;
-    fptr_SXServerDidReceive     dataHandler_fptr;
-    fptr_SXServerDidDisconnect  didDisconnect_fptr;
-    fptr_SXServerWillSuspend    willSuspend_fptr;
-    fptr_SXServerDidResume      didResume_fptr;
-    fptr_SXServerWillKill       willKill_fptr;
+//    fptr_SXServerDidConnect     didConnect_fptr;
+//    fptr_SXServerDidReceive     dataHandler_fptr;
+//    fptr_SXServerDidDisconnect  didDisconnect_fptr;
+//    fptr_SXServerWillSuspend    willSuspend_fptr;
+//    fptr_SXServerDidResume      didResume_fptr;
+//    fptr_SXServerWillKill       willKill_fptr;
+    SXServerHandlers_cpp_fn;
     fptr_SXServerDidKill        didKill_fptr;
 #else
     fptr_SXServerDidStart*      didStart_fptr;
     fptr_SXServerShouldConnect* shouldConnect_fptr;
-    fptr_SXServerDidConnect*    didConnect_fptr;
-    fptr_SXServerDidReceive*    dataHandler_fptr;
-    fptr_SXServerDidDisconnect* didDisconnect_fptr;
-    fptr_SXServerWillSuspend*   willSuspend_fptr;
-    fptr_SXServerDidResume*     didResume_fptr;
-    fptr_SXServerWillKill*      willKill_fptr;
+//    fptr_SXServerDidConnect*    didConnect_fptr;
+//    fptr_SXServerDidReceive*    dataHandler_fptr;
+//    fptr_SXServerDidDisconnect* didDisconnect_fptr;
+//    fptr_SXServerWillSuspend*   willSuspend_fptr;
+//    fptr_SXServerDidResume*     didResume_fptr;
+    SXServerHandlers_c_fnptr;
+//    fptr_SXServerWillKill*      willKill_fptr;
     fptr_SXServerDidKill*       didKill_fptr;
 #endif
     
@@ -209,25 +213,25 @@ SXServerRef SXCreateServer          (sx_server_setup setup, SXError * err_ret, b
 SXServerRef SXCreateServer_f        (sx_server_setup setup, SXError * err_ret, fptr_SXServerDidReceive  message_handler);
 
 
-void SXServerSetBlockDidStart       (SXServerRef server, block_SXServerDidStart         );
-void SXServerSetBlockShouldConnect  (SXServerRef server, block_SXServerShouldConnect    );
-void SXServerSetBlockDidConnect     (SXServerRef server, block_SXServerDidConnect       );
-void SXServerSetBlockDidReceive     (SXServerRef server, block_SXServerDidReceive       );
-void SXServerSetBlockDidDisconnect  (SXServerRef server, block_SXServerDidDisconnect    );
-void SXServerSetBlockWillSuspend    (SXServerRef server, block_SXServerWillSuspend      );
-void SXServerSetBlockDidResume      (SXServerRef server, block_SXServerDidResume        );
-void SXServerSetBlockWillKill       (SXServerRef server, block_SXServerWillKill         );
-void SXServerSetBlockDidKill        (SXServerRef server, block_SXServerDidKill          );
-
-void SXServerSetFnPtrDidStart       (SXServerRef server, fptr_SXServerDidStart          );
-void SXServerSetFnPtrShouldConnect  (SXServerRef server, fptr_SXServerShouldConnect     );
-void SXServerSetFnPtrDidConnect     (SXServerRef server, fptr_SXServerDidConnect        );
-void SXServerSetFnPtrDidReceive     (SXServerRef server, fptr_SXServerDidReceive        );
-void SXServerSetFnPtrDidDisconnect  (SXServerRef server, fptr_SXServerDidDisconnect     );
-void SXServerSetFnPtrWillSuspend    (SXServerRef server, fptr_SXServerWillSuspend       );
-void SXServerSetFnPtrDidResume      (SXServerRef server, fptr_SXServerDidResume         );
-void SXServerSetFnPtrWillKill       (SXServerRef server, fptr_SXServerWillKill          );
-void SXServerSetFnPtrDidKill        (SXServerRef server, fptr_SXServerDidKill           );
+//void SXServerSetBlockDidStart       (SXServerRef server, block_SXServerDidStart         );
+//void SXServerSetBlockShouldConnect  (SXServerRef server, block_SXServerShouldConnect    );
+//void SXServerSetBlockDidConnect     (SXServerRef server, block_SXServerDidConnect       );
+//void SXServerSetBlockDidReceive     (SXServerRef server, block_SXServerDidReceive       );
+//void SXServerSetBlockDidDisconnect  (SXServerRef server, block_SXServerDidDisconnect    );
+//void SXServerSetBlockWillSuspend    (SXServerRef server, block_SXServerWillSuspend      );
+//void SXServerSetBlockDidResume      (SXServerRef server, block_SXServerDidResume        );
+//void SXServerSetBlockWillKill       (SXServerRef server, block_SXServerWillKill         );
+//void SXServerSetBlockDidKill        (SXServerRef server, block_SXServerDidKill          );
+//
+//void SXServerSetFnPtrDidStart       (SXServerRef server, fptr_SXServerDidStart          );
+//void SXServerSetFnPtrShouldConnect  (SXServerRef server, fptr_SXServerShouldConnect     );
+//void SXServerSetFnPtrDidConnect     (SXServerRef server, fptr_SXServerDidConnect        );
+//void SXServerSetFnPtrDidReceive     (SXServerRef server, fptr_SXServerDidReceive        );
+//void SXServerSetFnPtrDidDisconnect  (SXServerRef server, fptr_SXServerDidDisconnect     );
+//void SXServerSetFnPtrWillSuspend    (SXServerRef server, fptr_SXServerWillSuspend       );
+//void SXServerSetFnPtrDidResume      (SXServerRef server, fptr_SXServerDidResume         );
+//void SXServerSetFnPtrWillKill       (SXServerRef server, fptr_SXServerWillKill          );
+//void SXServerSetFnPtrDidKill        (SXServerRef server, fptr_SXServerDidKill           );
 
 #ifdef __DISPATCH_PUBLIC__
 

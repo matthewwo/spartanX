@@ -63,7 +63,7 @@ typedef struct _SXSocket {
 
 typedef sx_socket_t * SXSocketRef;
 
-SXSocketRef SXCreateServerSocket(short port,
+SXSocketRef SXCreateServerSocket(unsigned short port,
                                  int domain,
                                  int type,
                                  int protocol,

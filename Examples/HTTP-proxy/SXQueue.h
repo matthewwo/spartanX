@@ -34,7 +34,11 @@
 #include <stdio.h>
 #include "SXSocket.h"
 #include "SXError.h"
+#include "SXEventHandler.h"
+
 #include <dispatch/dispatch.h>
+
+typedef struct sx_server * SXServerRef;
 
 SXError SXCheckStatus(sx_status_t current, sx_status_t required);
 
@@ -57,7 +61,15 @@ typedef struct sx_queue
     __unsafe_unretained dispatch_queue_t gcd_queue;
     SXSocketRef sock;
     sx_status_t status;
-    size_t life_count;
+    
+#ifdef  __BLOCKS__
+    SXServerHandlers_block;
+#endif
+#ifdef __cplusplus
+    SXServerHandlers_cpp_fn;
+#else
+    SXServerHandlers_c_fnptr;
+#endif
     void * udata;
     void * udata2;
     unsigned int ref_count;

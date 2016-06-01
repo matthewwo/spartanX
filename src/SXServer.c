@@ -108,83 +108,83 @@ exit:
     return server;
 }
 
-void SXServerSetBlockDidStart
-(SXServerRef server, block_SXServerDidStart b ) {
-    server->didStart_block = b;
-}
-void SXServerSetFnPtrDidStart
-(SXServerRef server, fptr_SXServerDidStart f ) {
-    server->didStart_fptr = f;
-};
-void SXServerSetBlockShouldConnect
-(SXServerRef server, block_SXServerShouldConnect b )
-{
-    server->shouldConnect_block = b;
-}
-void SXServerSetFnPtrShouldConnect
-(SXServerRef server, fptr_SXServerShouldConnect f )
-{
-    server->shouldConnect_fptr = f;
-};
-void SXServerSetBlockDidConnect
-(SXServerRef server, block_SXServerDidConnect b ) {
-    server->didConnect_block = b;
-}
-void SXServerSetFnPtrDidConnect
-(SXServerRef server, fptr_SXServerDidConnect f ) {
-    server->didConnect_fptr = f;
-};
-void SXServerSetBlockDidReceive
-(SXServerRef server, block_SXServerDidReceive b ) {
-    server->dataHandler_block = b;
-}
-void SXServerSetFnPtrDidReceive
-(SXServerRef server, fptr_SXServerDidReceive f ) {
-    server->dataHandler_fptr = f;
-};
-void SXServerSetBlockDidDisconnect
-(SXServerRef server, block_SXServerDidDisconnect b )
-{
-    server->didDisconnect_block = b;
-}
-void SXServerSetFnPtrDidDisconnect
-(SXServerRef server, fptr_SXServerDidDisconnect f )
-{
-    server->didDisconnect_fptr = f;
-};
-void SXServerSetBlockWillSuspend
-(SXServerRef server, block_SXServerWillSuspend b)
-{
-    server->willSuspend_block = b;
-}
-void SXServerSetFnPtrWillSuspend
-(SXServerRef server, fptr_SXServerWillSuspend f ) {
-    server->willSuspend_fptr = f;
-}
-void SXServerSetBlockDidResume
-(SXServerRef server, block_SXServerDidResume b ) {
-    server->didResume_block = b;
-}
-void SXServerSetFnPtrDidResume
-(SXServerRef server, fptr_SXServerDidResume f ) {
-    server->didResume_fptr = f;
-};
-void SXServerSetBlockWillKill
-(SXServerRef server, block_SXServerWillKill b ) {
-    server->willKill_block = b;
-}
-void SXServerSetFnPtrWillKill
-(SXServerRef server, fptr_SXServerWillKill f ) {
-    server->willKill_fptr = f;
-};
-void SXServerSetBlockDidKill
-(SXServerRef server, block_SXServerDidKill b ) {
-    server->didKill_block = b;
-}
-void SXServerSetFnPtrDidKill
-(SXServerRef server, fptr_SXServerDidKill f ) {
-    server->didKill_fptr = f;
-};
+//void SXServerSetBlockDidStart
+//(SXServerRef server, block_SXServerDidStart b ) {
+//    server->didStart_block = b;
+//}
+//void SXServerSetFnPtrDidStart
+//(SXServerRef server, fptr_SXServerDidStart f ) {
+//    server->didStart_fptr = f;
+//};
+//void SXServerSetBlockShouldConnect
+//(SXServerRef server, block_SXServerShouldConnect b )
+//{
+//    server->shouldConnect_block = b;
+//}
+//void SXServerSetFnPtrShouldConnect
+//(SXServerRef server, fptr_SXServerShouldConnect f )
+//{
+//    server->shouldConnect_fptr = f;
+//};
+//void SXServerSetBlockDidConnect
+//(SXServerRef server, block_SXServerDidConnect b ) {
+//    server->didConnect_block = b;
+//}
+//void SXServerSetFnPtrDidConnect
+//(SXServerRef server, fptr_SXServerDidConnect f ) {
+//    server->didConnect_fptr = f;
+//};
+//void SXServerSetBlockDidReceive
+//(SXServerRef server, block_SXServerDidReceive b ) {
+//    server->dataHandler_block = b;
+//}
+//void SXServerSetFnPtrDidReceive
+//(SXServerRef server, fptr_SXServerDidReceive f ) {
+//    server->dataHandler_fptr = f;
+//};
+//void SXServerSetBlockDidDisconnect
+//(SXServerRef server, block_SXServerDidDisconnect b )
+//{
+//    server->didDisconnect_block = b;
+//}
+//void SXServerSetFnPtrDidDisconnect
+//(SXServerRef server, fptr_SXServerDidDisconnect f )
+//{
+//    server->didDisconnect_fptr = f;
+//};
+//void SXServerSetBlockWillSuspend
+//(SXServerRef server, block_SXServerWillSuspend b)
+//{
+//    server->willSuspend_block = b;
+//}
+//void SXServerSetFnPtrWillSuspend
+//(SXServerRef server, fptr_SXServerWillSuspend f ) {
+//    server->willSuspend_fptr = f;
+//}
+//void SXServerSetBlockDidResume
+//(SXServerRef server, block_SXServerDidResume b ) {
+//    server->didResume_block = b;
+//}
+//void SXServerSetFnPtrDidResume
+//(SXServerRef server, fptr_SXServerDidResume f ) {
+//    server->didResume_fptr = f;
+//};
+//void SXServerSetBlockWillKill
+//(SXServerRef server, block_SXServerWillKill b ) {
+//    server->willKill_block = b;
+//}
+//void SXServerSetFnPtrWillKill
+//(SXServerRef server, fptr_SXServerWillKill f ) {
+//    server->willKill_fptr = f;
+//};
+//void SXServerSetBlockDidKill
+//(SXServerRef server, block_SXServerDidKill b ) {
+//    server->didKill_block = b;
+//}
+//void SXServerSetFnPtrDidKill
+//(SXServerRef server, fptr_SXServerDidKill f ) {
+//    server->didKill_fptr = f;
+//};
 
 
 SXError SXRetainServer(SXServerRef server)
@@ -305,19 +305,28 @@ SXError SXServerStart_f(SXServerRef server,
 
 #define has_handler(fname) !(use_block_handler ? server->CAT(fname, _block) == NULL : server->CAT(fname, _fptr) == NULL)
 
+
+#define has_handler_q(fname) !(use_block_handler ? queue->CAT(fname, _block) == NULL : queue->CAT(fname, _fptr) == NULL)
+
 #define SERVER_HAS_STATUS(stat) (server->status == stat)
 
 #define use_fn(fname, args) server->CAT(fname, _fptr) args
+#define use_fn_q(fname, args) queue->CAT(fname, _fptr) args
 
 #ifdef __BLOCKS__
 #define use_block(fname, args) server->CAT(fname, _block) args
+#define use_block_q(fname, args) queue->CAT(fname, _block) args
+
 #define eval(fname, args) (use_block_handler ? use_block(fname, args) : use_fn(fname, args))
+#define eval_q(fname, args) (use_block_handler ? use_block_q(fname, args) : use_fn_q(fname, args))
 #else
 #define eval(fname, args) (use_fn(fname, args))
+#define eval_q(fname, args) (use_fn_q(fname, args))
 #endif
 
 #define eval_if_exist(fname, args) if (has_handler(fname)) eval(fname, args);
 
+#define eval_if_exist_q(fname, args) if (has_handler_q(fname)) eval_q(fname, args);
 
 #ifdef __DISPATCH_PUBLIC__
 
@@ -381,10 +390,20 @@ SXError SXServerStart(SXServerRef server,
                 SXQueueRef queue = SXCreateQueue((SXSocketRef)&sock, r_queue, NULL);
                 queue->status = sx_status_running;
                 
+                
+                // set the default handlers of the queue
+                transfer_fn(queue, server, didConnect);
+                transfer_fn(queue, server, dataHandler);
+                transfer_fn(queue, server, didDisconnect);
+                transfer_fn(queue, server, willSuspend);
+                transfer_fn(queue, server, didResume);
+                transfer_fn(queue, server, willKill);
+                
+                
                 SXRetainServer(server);
     
                 bool suspended = false;
-                eval_if_exist(didConnect, (server, queue));
+                eval_if_exist_q(didConnect, (server, queue));
                 sx_byte buf[server->dataSize];
                 
                 do {
@@ -399,17 +418,17 @@ SXError SXServerStart(SXServerRef server,
                         s = recv(sock.sockfd, buf, server->dataSize, 0);
                         if (s == -1)
                             goto exit;
-                        s = eval(dataHandler, (server, queue, buf, s));
+                        s = eval_q(dataHandler, (server, queue, buf, s));
                         break;
                         
                     case sx_status_resuming:
                         queue->status = sx_status_running;
-                        eval_if_exist(didResume, (server, queue));
+                        eval_if_exist_q(didResume, (server, queue));
                         break;
                         
                     case sx_status_suspend: {
                         if (!suspended)
-                            eval_if_exist(willSuspend, (server, queue));
+                            eval_if_exist_q(willSuspend, (server, queue));
                         suspended = true;
                         
                         
@@ -424,7 +443,7 @@ SXError SXServerStart(SXServerRef server,
                             
                         case sx_status_resuming:
                         case sx_status_running:
-                            s = eval(dataHandler, (server, queue, buf, len));
+                            s = eval_q(dataHandler, (server, queue, buf, len));
                             break;
                             
                         default:
@@ -435,7 +454,7 @@ SXError SXServerStart(SXServerRef server,
                     case sx_status_should_terminate:
                         
                     case sx_status_idle:
-                        eval_if_exist(willKill, (server, queue));
+                        eval_if_exist_q(willKill, (server, queue));
                         goto exit;
                         
                     default:
@@ -446,7 +465,7 @@ SXError SXServerStart(SXServerRef server,
                 
             exit:
                 close(socket.sockfd);
-                eval_if_exist(didDisconnect, (server, queue));
+                eval_if_exist_q(didDisconnect, (server, queue));
                 SXReleaseServer(server);
                 SXReleaseQueue(queue);
                 --count;
@@ -475,9 +494,13 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
         size_t count = 0, n_ev_changes;
         int kq;
         
-        struct kevent64_s events[server->max_guest + 1];
-        struct kevent64_s change;
-        
+        #ifdef __APPLE__
+            struct kevent64_s events[server->max_guest + 1];
+            struct kevent64_s change;
+        #else
+            struct kevent events[server->max_guest + 1];
+            struct kevent change;
+        #endif
         if ((kq = kqueue()) == -1) {
             perror("kqueue");
             err = SX_ERROR_SYS_KQUEUE;
@@ -485,17 +508,31 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
         }
         
         SXSocketListen(server->socket);
-        EV_SET64(&change, server->socket->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0, 0, 0);
-        kevent64(kq, &change, 1, NULL, 0, 0, NULL);
+        
+        #ifdef __APPLE__
+                EV_SET64(&change, server->socket->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0, 0, 0);
+                kevent64(kq, &change, 1, NULL, 0, 0, NULL);
+        #else
+            EV_SET(&change, server->socket->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
+            kevent(kq, &change, 1, NULL, 0, NULL);
+        #endif
 
         while (server->status != sx_status_should_terminate) {
+    
+            #ifdef __APPLE__
+                if ((n_ev_changes = kevent64(kq, NULL, 0, events, (int)server->max_guest + 1, 0, 0)) == -1) {
+                    perror("kevent64");
+                    err = SX_ERROR_SYS_KEVENT;
+                    return;
+                }
+            #else
+                if ((n_ev_changes = kevent(kq, NULL, 0, events, server->max_guest + 1, 0)) == -1) {
+                    perror("kevent");
+                    err = SX_ERROR_SYS_KEVENT;
+                    return;
+                }
+            #endif
             
-            if ((n_ev_changes = kevent64(kq, NULL, 0, events, server->max_guest + 1, 0, 0)) == -1) {
-                perror("kevent64");
-                err = SX_ERROR_SYS_KEVENT;
-                return;
-            }
-
             for (int i = 0; i < n_ev_changes; ++i)
             {
 
@@ -514,8 +551,13 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                         } else {
                             SXQueueRef queue = SXCreateQueue((SXSocketRef)socket, NULL, &err);
                             if (queue != NULL) {
+                            #ifdef __APPLE__
                                 EV_SET64(&change, socket->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, (unsigned long)queue, 0, 0);
-                                kevent64(kq, &change, 1, NULL, 0, NULL, 0);
+                                kevent64(kq, &change, 1, NULL, 0, 0, 0);
+                            #else
+                                EV_SET(&change, socket->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, queue);
+                                kevent(kq, &change, 1, NULL, 0, NULL);
+                            #endif
                                 queue->status = sx_status_running;
                                 count++;
                             }
@@ -584,9 +626,13 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
 
                     continue;
                 exit:
-//                    EV_SET64(&change, socket->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, (unsigned long)queue, 0, 0);
+                #ifdef __APPLE__
                     EV_SET64(&change, queue->sock->sockfd, EVFILT_READ, EV_DELETE | EV_DISABLE, 0, 0, 0, 0, 0);
                     kevent64(kq, &change, 1, NULL, 0, 0, 0);
+                #else
+                    EV_SET(&change, queue->sock->sockfd, EVFILT_READ, EV_DELETE | EV_DISABLE, 0, 0, 0);
+                    kevent(kq, &change, 1, NULL, 0, 0);
+                #endif
                     close(queue->sock->sockfd);
                     SXReleaseQueue(queue);
                     eval_if_exist(didDisconnect, (server, queue));
@@ -608,3 +654,8 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
 #undef eval
 #undef eval_if_exist
 #undef has_handler
+#undef use_block_q
+#undef use_fn_q
+#undef eval_q
+#undef eval_if_exist_q
+#undef has_handler_q

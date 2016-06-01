@@ -41,7 +41,6 @@ extern "C" {
 #include "SXSocket.h"
 #include "SXQueue.h"
 #include "SXClient.h"
-#include "SXString.h"
     
 #ifdef __cplusplus
 }

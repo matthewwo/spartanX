@@ -90,7 +90,7 @@ SXError SXFreeSocket(SXSocketRef socket)
     return SX_SUCCESS;
 }
 
-SXSocketRef SXCreateServerSocket(short port,
+SXSocketRef SXCreateServerSocket(unsigned short port,
                                  int domain,
                                  int type,
                                  int protocol,

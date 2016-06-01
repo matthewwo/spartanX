@@ -17,6 +17,9 @@
 
 #include <dispatch/dispatch.h>
 
+#ifndef __APPLE__
+typedef long dispatch_queue_priority_t;
+#endif
 
 
 #ifdef __cplusplus
@@ -29,7 +32,7 @@ extern "C" {
 #include <stdbool.h>
     
     
-#if (defined(__i386__) || defined(__amd64__)) && !defined(SX_STD_ALLOC)
+#if defined(__i386__) || defined(__amd64__)
 
 #include <gperftools/tcmalloc.h>
     
@@ -68,5 +71,7 @@ typedef             int     sx_int32;
 typedef unsigned    long    sx_uint64;
 typedef             long    sx_int64;
 typedef             char    sx_byte;
+
+
 
 #endif /* types_h */

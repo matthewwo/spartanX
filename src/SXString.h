@@ -53,6 +53,8 @@ SXVectorRef SXStringSubStringsTrimmedByCString(SXStringRef target, const char * 
 void SXStringReplacingOccurrencesOfString(SXStringRef string, SXStringRef target, SXStringRef replacement);
 void SXStringReplacingOccurrencesOfCString(SXStringRef string, const char * ctarget, const char * creplacement);
 
+SXStringRef SXStringByJoiningSubStrings(SXVectorRef substring);
+void SXStringJoinCString(SXStringRef string, const char * cstring);
 
 SXStringRef SXStringByReplacingOccurrencesOfString(SXStringRef string, SXStringRef target, SXStringRef replacement);
 SXStringRef SXStringByReplacingOccurrencesOfCString(SXStringRef string, const char * ctarget, const char * creplacement);

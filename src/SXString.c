@@ -61,9 +61,27 @@ SXVectorRef SXStringSubCStringLocations(SXStringRef o_str, const char *trim, siz
         if (!strncmp(o_str->chars + i, trim, len))
             locas[n++] = i;
     
+    if (n == 0) return NULL;
+    
     SXVectorRef v_locas = SXCreateVectorWithArray(locas, sizeof(int), n, NULL);
     
     return v_locas;
+}
+
+void SXStringJoinCString(SXStringRef string, const char * cstring) {
+    string->chars = sx_realloc(string->chars, string->length + strlen(cstring) + 1);
+    memcpy(string->chars + string->length, cstring, strlen(cstring));
+    
+}
+
+SXStringRef SXStringByJoiningSubStrings(SXVectorRef substring) {
+    SXStringRef first = *(SXStringRef *)SXVectorObjectPtrAtIndex(substring, 0);
+    SXRetainString(first);
+    for (int i = 1; i < substring->count; ++i) {
+        SXStringRef o = *(SXStringRef *)SXVectorObjectPtrAtIndex(substring, i);
+        SXStringJoinCString(first, o->chars);
+    }
+    return first;
 }
 
 SXVectorRef SXStringSubStringLocations(SXStringRef o_str, SXStringRef trim)
@@ -112,7 +130,8 @@ SXVectorRef SXStringSubStringsTrimmedByCString(SXStringRef target, const char * 
 void SXStringReplacingOccurrencesOfString(SXStringRef string, SXStringRef target, SXStringRef replacement)
 {
     size_t len = string->length + replacement->length * string->length + 1;
-    char buf[len]; // maximum possible characters
+//    char buf[len]; // maximum possible characters
+    char *buf = sx_calloc(len, sizeof(char));
     memset(buf, 0, len);
     SXVectorRef positions = SXStringSubStringLocations(string, target);
     
@@ -141,6 +160,7 @@ void SXStringReplacingOccurrencesOfString(SXStringRef string, SXStringRef target
     
     memset(string->chars, 0, len);
     memcpy(string->chars, buf, len);
+    sx_free(buf);
     
     string->length = strlen(string->chars);
 }
