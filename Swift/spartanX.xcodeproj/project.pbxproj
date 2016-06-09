@@ -1,0 +1,305 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CE27C84B1D012A4500052A0F /* SXSockaddr.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE27C84A1D012A4500052A0F /* SXSockaddr.swift */; };
+		CE27C84D1D0220D500052A0F /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE27C84C1D0220D500052A0F /* Helper.swift */; };
+		CEE317721D027AB80021CD82 /* SXRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE317711D027AB80021CD82 /* SXRuntime.swift */; };
+		CEE317741D02A5110021CD82 /* SXClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE317731D02A5110021CD82 /* SXClient.swift */; };
+		CEE317AA1D036D980021CD82 /* SXObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE317A91D036D980021CD82 /* SXObject.swift */; };
+		CEE317AE1D036F7D0021CD82 /* SXTypeProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE317AD1D036F7D0021CD82 /* SXTypeProto.swift */; };
+		CEE3708D1D001E16000AB693 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE3708C1D001E16000AB693 /* main.swift */; };
+		CEE370941D001E4B000AB693 /* SXServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE370931D001E4B000AB693 /* SXServer.swift */; };
+		CEE370961D001EA5000AB693 /* SXQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE370951D001EA5000AB693 /* SXQueue.swift */; };
+		CEE370981D001ECA000AB693 /* SXSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE370971D001ECA000AB693 /* SXSocket.swift */; };
+		CEE3709A1D002032000AB693 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE370991D002032000AB693 /* Enums.swift */; };
+		CEF55AB61D09569300D6EADC /* proxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF55AB51D09569300D6EADC /* proxy.swift */; };
+		CEF55AB81D09586F00D6EADC /* selectServiceDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF55AB71D09586F00D6EADC /* selectServiceDemo.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CEE370871D001E16000AB693 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		CE27C84A1D012A4500052A0F /* SXSockaddr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXSockaddr.swift; sourceTree = "<group>"; };
+		CE27C84C1D0220D500052A0F /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		CEE317711D027AB80021CD82 /* SXRuntime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXRuntime.swift; sourceTree = "<group>"; };
+		CEE317731D02A5110021CD82 /* SXClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXClient.swift; sourceTree = "<group>"; };
+		CEE317A91D036D980021CD82 /* SXObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXObject.swift; sourceTree = "<group>"; };
+		CEE317AD1D036F7D0021CD82 /* SXTypeProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXTypeProto.swift; sourceTree = "<group>"; };
+		CEE370891D001E16000AB693 /* spartanX */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spartanX; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEE3708C1D001E16000AB693 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		CEE370931D001E4B000AB693 /* SXServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXServer.swift; sourceTree = "<group>"; };
+		CEE370951D001EA5000AB693 /* SXQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXQueue.swift; sourceTree = "<group>"; };
+		CEE370971D001ECA000AB693 /* SXSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXSocket.swift; sourceTree = "<group>"; };
+		CEE370991D002032000AB693 /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		CEF55AB51D09569300D6EADC /* proxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = proxy.swift; sourceTree = "<group>"; };
+		CEF55AB71D09586F00D6EADC /* selectServiceDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = selectServiceDemo.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CEE370861D001E16000AB693 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CEE370801D001E16000AB693 = {
+			isa = PBXGroup;
+			children = (
+				CEE3708B1D001E16000AB693 /* spartanX */,
+				CEE3708A1D001E16000AB693 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CEE3708A1D001E16000AB693 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CEE370891D001E16000AB693 /* spartanX */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CEE3708B1D001E16000AB693 /* spartanX */ = {
+			isa = PBXGroup;
+			children = (
+				CEF55AB41D09568800D6EADC /* Examples */,
+				CEE3708C1D001E16000AB693 /* main.swift */,
+				CEE317731D02A5110021CD82 /* SXClient.swift */,
+				CEE370931D001E4B000AB693 /* SXServer.swift */,
+				CEE370951D001EA5000AB693 /* SXQueue.swift */,
+				CEE370971D001ECA000AB693 /* SXSocket.swift */,
+				CEE370991D002032000AB693 /* Enums.swift */,
+				CE27C84A1D012A4500052A0F /* SXSockaddr.swift */,
+				CE27C84C1D0220D500052A0F /* Helper.swift */,
+				CEE317711D027AB80021CD82 /* SXRuntime.swift */,
+				CEE317A91D036D980021CD82 /* SXObject.swift */,
+				CEE317AD1D036F7D0021CD82 /* SXTypeProto.swift */,
+			);
+			path = spartanX;
+			sourceTree = "<group>";
+		};
+		CEF55AB41D09568800D6EADC /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				CEF55AB51D09569300D6EADC /* proxy.swift */,
+				CEF55AB71D09586F00D6EADC /* selectServiceDemo.swift */,
+			);
+			name = Examples;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CEE370881D001E16000AB693 /* spartanX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEE370901D001E16000AB693 /* Build configuration list for PBXNativeTarget "spartanX" */;
+			buildPhases = (
+				CEE370851D001E16000AB693 /* Sources */,
+				CEE370861D001E16000AB693 /* Frameworks */,
+				CEE370871D001E16000AB693 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = spartanX;
+			productName = spartanX;
+			productReference = CEE370891D001E16000AB693 /* spartanX */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CEE370811D001E16000AB693 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = yuuji;
+				TargetAttributes = {
+					CEE370881D001E16000AB693 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+				};
+			};
+			buildConfigurationList = CEE370841D001E16000AB693 /* Build configuration list for PBXProject "spartanX" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = CEE370801D001E16000AB693;
+			productRefGroup = CEE3708A1D001E16000AB693 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CEE370881D001E16000AB693 /* spartanX */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CEE370851D001E16000AB693 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEE317741D02A5110021CD82 /* SXClient.swift in Sources */,
+				CEE3708D1D001E16000AB693 /* main.swift in Sources */,
+				CEE317721D027AB80021CD82 /* SXRuntime.swift in Sources */,
+				CE27C84B1D012A4500052A0F /* SXSockaddr.swift in Sources */,
+				CEF55AB61D09569300D6EADC /* proxy.swift in Sources */,
+				CEE3709A1D002032000AB693 /* Enums.swift in Sources */,
+				CEF55AB81D09586F00D6EADC /* selectServiceDemo.swift in Sources */,
+				CEE317AE1D036F7D0021CD82 /* SXTypeProto.swift in Sources */,
+				CEE370981D001ECA000AB693 /* SXSocket.swift in Sources */,
+				CEE370941D001E4B000AB693 /* SXServer.swift in Sources */,
+				CE27C84D1D0220D500052A0F /* Helper.swift in Sources */,
+				CEE317AA1D036D980021CD82 /* SXObject.swift in Sources */,
+				CEE370961D001EA5000AB693 /* SXQueue.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		CEE3708E1D001E16000AB693 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CEE3708F1D001E16000AB693 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		CEE370911D001E16000AB693 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		CEE370921D001E16000AB693 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CEE370841D001E16000AB693 /* Build configuration list for PBXProject "spartanX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEE3708E1D001E16000AB693 /* Debug */,
+				CEE3708F1D001E16000AB693 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEE370901D001E16000AB693 /* Build configuration list for PBXNativeTarget "spartanX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEE370911D001E16000AB693 /* Debug */,
+				CEE370921D001E16000AB693 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CEE370811D001E16000AB693 /* Project object */;
+}

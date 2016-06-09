@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "17B753A46354D6C9AB8DF1549FAEC987ACAFCF37",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "050BC20D5C46998E9844DB484BE00B1D0D8A096C" : 0,
+    "17B753A46354D6C9AB8DF1549FAEC987ACAFCF37" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "8A550A4F-48E0-4490-9A4D-A2C008257DC6",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "050BC20D5C46998E9844DB484BE00B1D0D8A096C" : "..",
+    "17B753A46354D6C9AB8DF1549FAEC987ACAFCF37" : "spartanX\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "spartanX",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "spartanX.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/michael-yuji\/spartanX.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "050BC20D5C46998E9844DB484BE00B1D0D8A096C"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "gitlab.hatsuneyuji.com:yuuji\/spartanX-swift.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "17B753A46354D6C9AB8DF1549FAEC987ACAFCF37"
+    }
+  ]
+}
