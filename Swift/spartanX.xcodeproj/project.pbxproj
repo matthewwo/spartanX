@@ -18,8 +18,8 @@
 		CEE370961D001EA5000AB693 /* SXQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE370951D001EA5000AB693 /* SXQueue.swift */; };
 		CEE370981D001ECA000AB693 /* SXSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE370971D001ECA000AB693 /* SXSocket.swift */; };
 		CEE3709A1D002032000AB693 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE370991D002032000AB693 /* Enums.swift */; };
-		CEF55AB61D09569300D6EADC /* proxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF55AB51D09569300D6EADC /* proxy.swift */; };
-		CEF55AB81D09586F00D6EADC /* selectServiceDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF55AB71D09586F00D6EADC /* selectServiceDemo.swift */; };
+		CEF55ABB1D09689500D6EADC /* proxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF55AB91D09689500D6EADC /* proxy.swift */; };
+		CEF55ABC1D09689500D6EADC /* selectServiceDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF55ABA1D09689500D6EADC /* selectServiceDemo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,8 +47,8 @@
 		CEE370951D001EA5000AB693 /* SXQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXQueue.swift; sourceTree = "<group>"; };
 		CEE370971D001ECA000AB693 /* SXSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXSocket.swift; sourceTree = "<group>"; };
 		CEE370991D002032000AB693 /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
-		CEF55AB51D09569300D6EADC /* proxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = proxy.swift; sourceTree = "<group>"; };
-		CEF55AB71D09586F00D6EADC /* selectServiceDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = selectServiceDemo.swift; sourceTree = "<group>"; };
+		CEF55AB91D09689500D6EADC /* proxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = proxy.swift; path = Examples/proxy.swift; sourceTree = "<group>"; };
+		CEF55ABA1D09689500D6EADC /* selectServiceDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = selectServiceDemo.swift; path = Examples/selectServiceDemo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,8 +100,8 @@
 		CEF55AB41D09568800D6EADC /* Examples */ = {
 			isa = PBXGroup;
 			children = (
-				CEF55AB51D09569300D6EADC /* proxy.swift */,
-				CEF55AB71D09586F00D6EADC /* selectServiceDemo.swift */,
+				CEF55AB91D09689500D6EADC /* proxy.swift */,
+				CEF55ABA1D09689500D6EADC /* selectServiceDemo.swift */,
 			);
 			name = Examples;
 			sourceTree = "<group>";
@@ -167,11 +167,11 @@
 				CEE3708D1D001E16000AB693 /* main.swift in Sources */,
 				CEE317721D027AB80021CD82 /* SXRuntime.swift in Sources */,
 				CE27C84B1D012A4500052A0F /* SXSockaddr.swift in Sources */,
-				CEF55AB61D09569300D6EADC /* proxy.swift in Sources */,
+				CEF55ABB1D09689500D6EADC /* proxy.swift in Sources */,
 				CEE3709A1D002032000AB693 /* Enums.swift in Sources */,
-				CEF55AB81D09586F00D6EADC /* selectServiceDemo.swift in Sources */,
 				CEE317AE1D036F7D0021CD82 /* SXTypeProto.swift in Sources */,
 				CEE370981D001ECA000AB693 /* SXSocket.swift in Sources */,
+				CEF55ABC1D09689500D6EADC /* selectServiceDemo.swift in Sources */,
 				CEE370941D001E4B000AB693 /* SXServer.swift in Sources */,
 				CE27C84D1D0220D500052A0F /* Helper.swift in Sources */,
 				CEE317AA1D036D980021CD82 /* SXObject.swift in Sources */,
