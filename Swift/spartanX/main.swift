@@ -36,6 +36,8 @@ import Foundation
 proxy_demo()
 selectService_demo()
 
+//SXSockaddr.DNSLookup(<#T##hostname: String##String#>, service: <#T##String#>)?.getIpAddress()
+SXSockaddr.DNSLookup(<#T##hostname: String##String#>, service: <#T##String#>, hints: [DNSLookupHint.Family(AF_INET), DNSLookupHint.SockType(SOCK_STREAM)])
 while (true) {
     /* don't waste cpu time on inf-loop */
     sleep(100000)

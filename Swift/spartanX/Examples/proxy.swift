@@ -102,7 +102,10 @@ func proxy_demo() {
         //    server.start(DISPATCH_QUEUE_PRIORITY_DEFAULT, operateQueue: DISPATCH_QUEUE_PRIORITY_HIGH)
         //    server.start()
         
-        /* most complex one, allows you to assign dispatch_priority in runtime */
+        /* most complex one, allows you to assign dispatch_priority in runtime
+         * the listening queue block will only call once when the server starts
+         * , but the operateQueue will call everytime when a connection accepted.
+         */
         /* first argument := the listening dispatch_queue_t */
         server.start({ () -> dispatch_queue_t in
             return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)
