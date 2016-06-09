@@ -32,23 +32,23 @@
 #include "SXServer.h"
 
 
-SXServerRef SXCreateServer(sx_server_setup setup, SXError * err_ret, block_SXServerDidReceive msg_handl)
+SXServerRef SXCreateServer(sx_server_setup setup, SXError * err_ret, didReceive msg_handl)
 {
     SXError tmp_err;
     SXServerRef server = (SXServerRef)sx_calloc(1, sizeof(sx_server_t));
-    
+    sx_obj_init(&server->obj, &SXFreeServer);
     sx_int16 port_num = setup.port;
     
     switch (setup.domain) {
     case 1:
-        server->socket = SXCreateServerSocket(port_num, AF_INET, SOCK_STREAM, 0, &tmp_err);
+        server->sock = SXCreateServerSocket(port_num, AF_INET, SOCK_STREAM, 0, &tmp_err);
         if (tmp_err != SX_SUCCESS) {
             sx_free(server);
             goto exit;
         }
         break;
     default:
-        server->socket = SXCreateServerSocket(port_num, AF_INET6, SOCK_STREAM, 0, &tmp_err);
+        server->sock = SXCreateServerSocket(port_num, AF_INET6, SOCK_STREAM, 0, &tmp_err);
         if (tmp_err != SX_SUCCESS) {
             sx_free(server);
             goto exit;
@@ -56,7 +56,6 @@ SXServerRef SXCreateServer(sx_server_setup setup, SXError * err_ret, block_SXSer
     }
     
     server->dataHandler_block = msg_handl;
-    server->ref_count = 1;
     server->backlog = setup.backlog;
     server->dataSize = setup.dataSize;
     server->max_guest = setup.max_guest;
@@ -70,139 +69,52 @@ exit:
     return server;
 }
 
-SXServerRef SXCreateServer_f(sx_server_setup setup, SXError * err_ret, fptr_SXServerDidReceive msg_handl)
+void SXServerSetBlockDidStart
+(SXServerRef server, didStart b ) {
+    server->didStart_block = b;
+}
+
+void SXServerSetBlockShouldConnect
+(SXServerRef server, shouldConnect b )
 {
-    SXError tmp_err;
-    SXServerRef server = (SXServerRef)sx_calloc(1, sizeof(sx_server_t));
-    
-    sx_int16 port_num = setup.port;
-    
-    switch (setup.domain) {
-        case 1:
-            server->socket = SXCreateServerSocket(port_num, AF_INET, SOCK_STREAM, 0, &tmp_err);
-            if (tmp_err != SX_SUCCESS) {
-                sx_free(server);
-                goto exit;
-            }
-            break;
-        default:
-            server->socket = SXCreateServerSocket(port_num, AF_INET6, SOCK_STREAM, 0, &tmp_err);
-            if (tmp_err != SX_SUCCESS) {
-                sx_free(server);
-                goto exit;
-            }
-    }
-    
-    server->dataHandler_fptr = msg_handl;
-    server->ref_count = 1;
-    server->backlog = setup.backlog;
-    server->dataSize = setup.dataSize;
-    server->max_guest = setup.max_guest;
-    server->failable = setup.failable;
-    
-    tmp_err = SX_SUCCESS;
-    
-exit:
-    if (err_ret != NULL)
-        *err_ret = tmp_err;
-    return server;
+    server->shouldConnect_block = b;
 }
-
-//void SXServerSetBlockDidStart
-//(SXServerRef server, block_SXServerDidStart b ) {
-//    server->didStart_block = b;
-//}
-//void SXServerSetFnPtrDidStart
-//(SXServerRef server, fptr_SXServerDidStart f ) {
-//    server->didStart_fptr = f;
-//};
-//void SXServerSetBlockShouldConnect
-//(SXServerRef server, block_SXServerShouldConnect b )
-//{
-//    server->shouldConnect_block = b;
-//}
-//void SXServerSetFnPtrShouldConnect
-//(SXServerRef server, fptr_SXServerShouldConnect f )
-//{
-//    server->shouldConnect_fptr = f;
-//};
+//
 //void SXServerSetBlockDidConnect
-//(SXServerRef server, block_SXServerDidConnect b ) {
+//(SXServerRef server, didConnect b ) {
 //    server->didConnect_block = b;
 //}
-//void SXServerSetFnPtrDidConnect
-//(SXServerRef server, fptr_SXServerDidConnect f ) {
-//    server->didConnect_fptr = f;
-//};
+//
 //void SXServerSetBlockDidReceive
-//(SXServerRef server, block_SXServerDidReceive b ) {
+//(SXServerRef server, didReceive b ) {
 //    server->dataHandler_block = b;
 //}
-//void SXServerSetFnPtrDidReceive
-//(SXServerRef server, fptr_SXServerDidReceive f ) {
-//    server->dataHandler_fptr = f;
-//};
+//
 //void SXServerSetBlockDidDisconnect
-//(SXServerRef server, block_SXServerDidDisconnect b )
+//(SXServerRef server, didDisconnect b )
 //{
 //    server->didDisconnect_block = b;
 //}
-//void SXServerSetFnPtrDidDisconnect
-//(SXServerRef server, fptr_SXServerDidDisconnect f )
-//{
-//    server->didDisconnect_fptr = f;
-//};
+//
 //void SXServerSetBlockWillSuspend
-//(SXServerRef server, block_SXServerWillSuspend b)
+//(SXServerRef server, willSuspend b)
 //{
 //    server->willSuspend_block = b;
 //}
-//void SXServerSetFnPtrWillSuspend
-//(SXServerRef server, fptr_SXServerWillSuspend f ) {
-//    server->willSuspend_fptr = f;
-//}
+//
 //void SXServerSetBlockDidResume
-//(SXServerRef server, block_SXServerDidResume b ) {
+//(SXServerRef server, didResume b ) {
 //    server->didResume_block = b;
 //}
-//void SXServerSetFnPtrDidResume
-//(SXServerRef server, fptr_SXServerDidResume f ) {
-//    server->didResume_fptr = f;
-//};
+//
 //void SXServerSetBlockWillKill
-//(SXServerRef server, block_SXServerWillKill b ) {
+//(SXServerRef server, willKill b ) {
 //    server->willKill_block = b;
 //}
-//void SXServerSetFnPtrWillKill
-//(SXServerRef server, fptr_SXServerWillKill f ) {
-//    server->willKill_fptr = f;
-//};
-//void SXServerSetBlockDidKill
-//(SXServerRef server, block_SXServerDidKill b ) {
-//    server->didKill_block = b;
-//}
-//void SXServerSetFnPtrDidKill
-//(SXServerRef server, fptr_SXServerDidKill f ) {
-//    server->didKill_fptr = f;
-//};
 
-
-SXError SXRetainServer(SXServerRef server)
-{
-    if (server->ref_count == sx_weak_object)
-        return SX_SUCCESS;
-    ++server->ref_count;
-    return SX_SUCCESS;
-}
-
-SXError SXReleaseServer(SXServerRef server)
-{
-    if (server->ref_count == sx_weak_object)
-        return SX_SUCCESS;
-    --server->ref_count;
-    if (server->ref_count == 0)
-        return SXFreeServer(server);
-    return SX_SUCCESS;
+void SXServerSetBlockDidKill
+(SXServerRef server, didKill b ) {
+    server->didKill_block = b;
 }
 
 SXError SXFreeServer(SXServerRef server)
@@ -210,7 +122,7 @@ SXError SXFreeServer(SXServerRef server)
     if (server->status != sx_status_idle)
         SXKillServer(server);
     
-    SX_RETURN_ERR(SXFreeSocket(server->socket));
+    SX_RETURN_ERR(SXFreeSocket(server->sock));
     
     memset(server, 0, sizeof(sx_server_t));
     sx_free(server);
@@ -255,11 +167,11 @@ SXError SXKillServer(SXServerRef server)
     SXCHECK_INCOMPATIBLES(&s, 1);
     
     server->status = sx_status_should_terminate;
-    close(server->socket->sockfd);
-    server->socket = SXCreateServerSocket(server->socket->port,
-                                          server->socket->domain,
-                                          server->socket->type,
-                                          server->socket->protocol,
+    close(server->sock->sockfd);
+    server->sock = SXCreateServerSocket(server->sock->port,
+                                          server->sock->domain,
+                                          server->sock->type,
+                                          server->sock->protocol,
                                           NULL);
     return SX_SUCCESS;
 }
@@ -270,94 +182,68 @@ SXError SXKillServer(SXServerRef server)
 
 SXError SXServerStart1(SXServerRef server,
                        dispatch_queue_priority_t listen_queue_priority,
-                       dispatch_queue_priority_t operate_queue_priority,
-                       bool use_blocks_handler)
+                       dispatch_queue_priority_t operate_queue_priority) //,
+                       //bool use_blocks_handler)
 {
     return SXServerStart(server, ^dispatch_queue_t{
         return dispatch_get_global_queue(listen_queue_priority, 0);
     }, ^dispatch_queue_t{
         return dispatch_get_global_queue(operate_queue_priority, 0);
-    }, use_blocks_handler);
+    });
+    //, use_blocks_handler);
 }
 
 SXError SXServerStart2(SXServerRef server,
-                       dispatch_queue_priority_t priority,
-                       bool use_blocks_handler)
+                       dispatch_queue_priority_t priority)//,
+                       //bool use_blocks_handler)
 {
     return SXServerStart(server, ^dispatch_queue_t{
         return dispatch_get_global_queue(priority, 0);
     }, ^dispatch_queue_t{
         return dispatch_get_global_queue(priority, 0);
-    }, use_blocks_handler);
+    });
 }
 
-SXError SXServerStart_f(SXServerRef server,
-                        fptr_queue_generate_policy listen_queue_generate_policy,
-                        fptr_queue_generate_policy operate_queue_generate_policy,
-                        bool use_blocks_handler)
-{
-    return SXServerStart(server, ^dispatch_queue_t{
-        return listen_queue_generate_policy();
-    }, ^dispatch_queue_t{
-        return operate_queue_generate_policy();
-    }, use_blocks_handler);
-}
-
-#define has_handler(fname) !(use_block_handler ? server->CAT(fname, _block) == NULL : server->CAT(fname, _fptr) == NULL)
-
-
-#define has_handler_q(fname) !(use_block_handler ? queue->CAT(fname, _block) == NULL : queue->CAT(fname, _fptr) == NULL)
+#define has_handler(fname) !(server->CAT(fname, _block) == NULL)
+#define has_handler_q(fname) !(queue->CAT(fname, _block) == NULL)
 
 #define SERVER_HAS_STATUS(stat) (server->status == stat)
 
-#define use_fn(fname, args) server->CAT(fname, _fptr) args
-#define use_fn_q(fname, args) queue->CAT(fname, _fptr) args
-
-#ifdef __BLOCKS__
 #define use_block(fname, args) server->CAT(fname, _block) args
 #define use_block_q(fname, args) queue->CAT(fname, _block) args
 
-#define eval(fname, args) (use_block_handler ? use_block(fname, args) : use_fn(fname, args))
-#define eval_q(fname, args) (use_block_handler ? use_block_q(fname, args) : use_fn_q(fname, args))
-#else
-#define eval(fname, args) (use_fn(fname, args))
-#define eval_q(fname, args) (use_fn_q(fname, args))
-#endif
+#define eval(fname, args) (use_block(fname, args))
+#define eval_q(fname, args) (use_block_q(fname, args))
 
 #define eval_if_exist(fname, args) if (has_handler(fname)) eval(fname, args);
-
 #define eval_if_exist_q(fname, args) if (has_handler_q(fname)) eval_q(fname, args);
 
 #ifdef __DISPATCH_PUBLIC__
 
 SXError SXServerStart(SXServerRef server,
                       block_queue_generate_policy preprocessQueue,
-                      block_queue_generate_policy operatingQueue,
-                      bool use_block_handler)
+                      block_queue_generate_policy operatingQueue)
 {
     if (server== NULL) return SX_ERROR_INVALID_SERVER;
     if (preprocessQueue == NULL) return SX_ERROR_CREATE_THREAD;
     if (operatingQueue == NULL) return SX_ERROR_CREATE_THREAD;
     __block SXError err;
     
-    if (server->socket->type == SOCK_DGRAM)
+    if (server->sock->type == SOCK_DGRAM)
         return SX_ERROR_SERVER_CANNOT_BE_DGRAM;
     
     dispatch_queue_t p_queue = preprocessQueue();
-    
-    SXRetainServer(server);
+
+    SXRetain(server);
     
     dispatch_async(p_queue, ^{
         server->status = sx_status_running;
         eval_if_exist(didStart, (server));
         __block int count = 0;
-        
-        if (!server->socket->blocking)
-            SXSocketSetBlock(server->socket, true);
-        
+
         while (server->status != sx_status_should_terminate)
         {
-            SXSocketListen(server->socket);
+            SXSocketListen(server->sock);
             
             if (server->status == sx_status_should_terminate)  break;
             else if (server->status == sx_status_suspend) continue;
@@ -368,9 +254,9 @@ SXError SXServerStart(SXServerRef server,
             ++count;
             sx_socket_t sock;
             
-            if ((sock.sockfd = accept(server->socket->sockfd, (struct sockaddr *)&sock.addr, (socklen_t *)&sock.addr.ss_len)) == -1) {
+            if ((sock.sockfd = accept(server->sock->sockfd, (struct sockaddr *)&sock.addr, (socklen_t *)&sock.addr.ss_len)) == -1) {
                 perror("accept");
-                err = SX_ERROR_SYS_ACCEPT;
+                server->errHandler_block(server, SX_ERROR_SYS_ACCEPT);
                 continue;
             }
 
@@ -386,7 +272,7 @@ SXError SXServerStart(SXServerRef server,
             dispatch_async(r_queue, ^{
                 size_t s = 1;
                 sx_socket_t socket = sock;
-                socket.ref_count = sx_weak_object; // weak pointer
+                socket.obj.ref_count = sx_weak_object;
                 SXQueueRef queue = SXCreateQueue((SXSocketRef)&sock, r_queue, NULL);
                 queue->status = sx_status_running;
                 
@@ -399,11 +285,9 @@ SXError SXServerStart(SXServerRef server,
                 transfer_fn(queue, server, didResume);
                 transfer_fn(queue, server, willKill);
                 
-                
-                SXRetainServer(server);
-    
+                SXRetain(server);
                 bool suspended = false;
-                eval_if_exist_q(didConnect, (server, queue));
+                eval_if_exist_q(didConnect, (queue));
                 sx_byte buf[server->dataSize];
                 
                 do {
@@ -418,17 +302,17 @@ SXError SXServerStart(SXServerRef server,
                         s = recv(sock.sockfd, buf, server->dataSize, 0);
                         if (s == -1)
                             goto exit;
-                        s = eval_q(dataHandler, (server, queue, buf, s));
+                        s = eval_q(dataHandler, (queue, buf, s));
                         break;
                         
                     case sx_status_resuming:
                         queue->status = sx_status_running;
-                        eval_if_exist_q(didResume, (server, queue));
+                        eval_if_exist_q(didResume, (queue));
                         break;
                         
                     case sx_status_suspend: {
                         if (!suspended)
-                            eval_if_exist_q(willSuspend, (server, queue));
+                            eval_if_exist_q(willSuspend, (queue));
                         suspended = true;
                         
                         
@@ -443,7 +327,7 @@ SXError SXServerStart(SXServerRef server,
                             
                         case sx_status_resuming:
                         case sx_status_running:
-                            s = eval_q(dataHandler, (server, queue, buf, len));
+                            s = eval_q(dataHandler, (queue, buf, len));
                             break;
                             
                         default:
@@ -452,9 +336,8 @@ SXError SXServerStart(SXServerRef server,
                         break;
                     }
                     case sx_status_should_terminate:
-                        
                     case sx_status_idle:
-                        eval_if_exist_q(willKill, (server, queue));
+                        eval_if_exist_q(willKill, (queue));
                         goto exit;
                         
                     default:
@@ -465,15 +348,15 @@ SXError SXServerStart(SXServerRef server,
                 
             exit:
                 close(socket.sockfd);
-                eval_if_exist_q(didDisconnect, (server, queue));
-                SXReleaseServer(server);
-                SXReleaseQueue(queue);
+                eval_if_exist_q(didDisconnect, (queue));
+                SXRelease(server);
+                SXRelease(queue);
                 --count;
             });
         }
         
         server->status = sx_status_idle;
-        SXReleaseServer(server);
+        SXRelease(server);
         
         eval_if_exist(didKill, (server));
         
@@ -481,12 +364,12 @@ SXError SXServerStart(SXServerRef server,
     return SX_SUCCESS;
 }
 
-SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, bool use_block_handler)
+SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue)
 {
-    if (server->socket->type == SOCK_DGRAM)
+    if (server->sock->type == SOCK_DGRAM)
         return SX_ERROR_SERVER_CANNOT_BE_DGRAM;
     
-    SXRetainServer(server);
+    SXRetain(server);
     dispatch_async(gcd_queue, ^{
         SXError err;
         server->status = sx_status_running;
@@ -507,13 +390,13 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
             return;
         }
         
-        SXSocketListen(server->socket);
+        SXSocketListen(server->sock);
         
         #ifdef __APPLE__
-                EV_SET64(&change, server->socket->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0, 0, 0);
+                EV_SET64(&change, server->sock->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0, 0, 0);
                 kevent64(kq, &change, 1, NULL, 0, 0, NULL);
         #else
-            EV_SET(&change, server->socket->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
+            EV_SET(&change, server->sock->sockfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
             kevent(kq, &change, 1, NULL, 0, NULL);
         #endif
 
@@ -536,18 +419,18 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
             for (int i = 0; i < n_ev_changes; ++i)
             {
 
-                if (events[i].ident == server->socket->sockfd) {
+                if (events[i].ident == server->sock->sockfd) {
 
                     if (!(count >= server->max_guest))
                     {
                         SXSocketRef socket = (SXSocketRef)sx_calloc(1, sizeof(sx_socket_t));
-                        socket->ref_count = 1;
+                        sx_obj_init(socket, &SXFreeSocket);
                         socket->domain = AF_UNSPEC;
-                        if ((socket->sockfd = accept(server->socket->sockfd,
+                        if ((socket->sockfd = accept(server->sock->sockfd,
                                                     (struct sockaddr *)&socket->addr,
                                                     (socklen_t *)&socket->addr)) == -1) {
                             perror("accept");
-                            SXReleaseSocket(socket);
+                            SXRelease(socket);
                         } else {
                             SXQueueRef queue = SXCreateQueue((SXSocketRef)socket, NULL, &err);
                             if (queue != NULL) {
@@ -576,7 +459,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                         case sx_status_running:
                             s = recv(queue->sock->sockfd, buf, server->dataSize, 0);
                             if (s != -1) {
-                                if ((s = eval(dataHandler, (server, queue, buf, s))) == -1)
+                                if ((s = eval(dataHandler, (queue, buf, s))) == -1)
                                     goto exit;
                                 break;
                             } else {
@@ -584,12 +467,12 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                             }
                         case sx_status_resuming:
                             queue->status = sx_status_running;
-                            eval_if_exist(didResume, (server, queue));
+                            eval_if_exist(didResume, (queue));
                             break;
                             
                         case sx_status_suspend: {
                             if (!suspended)
-                                eval_if_exist(willSuspend, (server, queue));
+                                eval_if_exist(willSuspend, (queue));
                             suspended = true;
                             
                             
@@ -604,7 +487,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                                     
                                 case sx_status_resuming:
                                 case sx_status_running:
-                                    s = eval(dataHandler, (server, queue, buf, len));
+                                    s = eval(dataHandler, (queue, buf, len));
                                     break;
                                     
                                 default:
@@ -614,7 +497,7 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                         case sx_status_should_terminate:
                             
                         case sx_status_idle:
-                            eval_if_exist(willKill, (server, queue));
+                            eval_if_exist(willKill, (queue));
                             goto exit;
                             
                         default:
@@ -634,28 +517,26 @@ SXError SXServerStart_kqueue(SXServerRef server, dispatch_queue_t gcd_queue, boo
                     kevent(kq, &change, 1, NULL, 0, 0);
                 #endif
                     close(queue->sock->sockfd);
-                    SXReleaseQueue(queue);
-                    eval_if_exist(didDisconnect, (server, queue));
+                    SXRelease(queue);
+                    eval_if_exist(didDisconnect, (queue));
 
                     --count;
                 }
-                
             }
-            
         }
     });
-    SXReleaseServer(server);
+    SXRelease(server);
     return SX_SUCCESS;
 }
 #endif
 #undef SERVER_HAS_STATUS
 #undef use_block
-#undef use_fn
+//#undef use_fn
 #undef eval
 #undef eval_if_exist
 #undef has_handler
 #undef use_block_q
-#undef use_fn_q
+//#undef use_fn_q
 #undef eval_q
 #undef eval_if_exist_q
 #undef has_handler_q

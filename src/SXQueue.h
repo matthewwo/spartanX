@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include "SXSocket.h"
 #include "SXError.h"
-#include "SXEventHandler.h"
+#include "sx_event.h"
 
 #include <dispatch/dispatch.h>
 
@@ -58,21 +58,11 @@ enum sx_status {
 
 typedef struct sx_queue
 {
+    sx_runtime_items;
     __unsafe_unretained dispatch_queue_t gcd_queue;
-    SXSocketRef sock;
-    sx_status_t status;
-    
-#ifdef  __BLOCKS__
-    SXServerHandlers_block;
-#endif
-#ifdef __cplusplus
-    SXServerHandlers_cpp_fn;
-#else
-    SXServerHandlers_c_fnptr;
-#endif
+
     void * udata;
     void * udata2;
-    unsigned int ref_count;
 } sx_queue_t;
 
 typedef struct sx_queue * SXQueueRef;
@@ -81,7 +71,5 @@ SXQueueRef  SXCreateQueue   (SXSocketRef socket, dispatch_queue_t queue, SXError
 SXError     SXSuspendQueue  (SXQueueRef queue);
 SXError     SXResumeQueue   (SXQueueRef queue);
 SXError     SXFreeQueue     (SXQueueRef queue);
-SXError     SXRetainQueue   (SXQueueRef queue);
-SXError     SXReleaseQueue  (SXQueueRef queue);
 
 #endif /* SXQueue_h */

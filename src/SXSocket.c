@@ -31,57 +31,6 @@
 
 #include "SXSocket.h"
 
-
-// From Stackoverflow
-unsigned getScopeForIp(const char *ip)
-{
-    struct ifaddrs *addrs;
-    char ipAddress[NI_MAXHOST];
-    unsigned scope=0;
-    // walk over the list of all interface addresses
-    getifaddrs(&addrs);
-    
-    for (struct ifaddrs *addr = addrs ; addr; addr = addr->ifa_next)
-    {
-        if (addr->ifa_addr && addr->ifa_addr->sa_family==AF_INET6){ // only interested in ipv6 ones
-            
-            getnameinfo(addr->ifa_addr,sizeof(struct sockaddr_in6),ipAddress,sizeof(ipAddress),NULL,0,NI_NUMERICHOST);
-            // result actually contains the interface name, so strip it
-            for(int i=0;ipAddress[i];i++){
-                if(ipAddress[i]=='%'){
-                    ipAddress[i]='\0';
-                    break;
-                }
-            }
-            // if the ip matches, convert the interface name to a scope index
-            if(strcmp(ipAddress,ip)==0){
-                scope=if_nametoindex(addr->ifa_name);
-                break;
-            }
-        }
-    }
-    freeifaddrs(addrs);
-    return scope;
-}
-
-SXError SXRetainSocket(SXSocketRef socket)
-{
-    if (socket->ref_count == sx_weak_object)
-        return SX_SUCCESS;
-    ++socket->ref_count;
-    return SX_SUCCESS;
-}
-
-SXError SXReleaseSocket(SXSocketRef socket)
-{
-    if (socket->ref_count == sx_weak_object)
-        return SX_SUCCESS;
-    --socket->ref_count;
-    if (socket->ref_count == 0)
-        return SXFreeSocket(socket);
-    return SX_SUCCESS;
-}
-
 SXError SXFreeSocket(SXSocketRef socket)
 {
     close(socket->sockfd);
@@ -89,6 +38,52 @@ SXError SXFreeSocket(SXSocketRef socket)
     socket = NULL;
     return SX_SUCCESS;
 }
+
+SXError dns_lookup(SXSocketRef socket, const char * hostname, const char * service, struct addrinfo * hint) {
+    struct addrinfo * info, * cinfo;
+    
+    if (getaddrinfo(hostname, service, hint, &info) != 0)
+        return SX_ERROR_SYS_GET_ADDR_INFO;
+    
+    
+    cinfo = info;
+    
+    while (cinfo != NULL) {
+        cinfo = cinfo->ai_next;
+        short port = htons(getservbyname(service, NULL)->s_port);
+        memset(&socket->addr, 0, sizeof(struct sockaddr_storage));
+        switch (cinfo->ai_family) {
+            case AF_INET:
+                socket->domain = AF_INET;
+                socket->type = cinfo->ai_socktype;
+                socket->protocol = cinfo->ai_protocol;
+                
+                sockaddr_in(socket->addr).sin_len = sizeof(struct sockaddr_in);
+                sockaddr_in(socket->addr).sin_family = AF_INET;
+                sockaddr_in(socket->addr).sin_addr = sockaddr_in(cinfo->ai_addr).sin_addr;
+                sockaddr_in(socket->addr).sin_port = port;
+                goto clean;
+            case AF_INET6:
+                sockaddr_in6(socket->addr).sin6_len = sizeof(struct sockaddr_in6);
+                sockaddr_in6(socket->addr).sin6_family = AF_INET6;
+                sockaddr_in6(socket->addr).sin6_port = port;
+                sockaddr_in6(socket->addr).sin6_addr = sockaddr_in6(cinfo->ai_addr).sin6_addr;
+                goto clean;
+            default:
+                goto cont;
+        }
+        
+    cont:
+        continue;
+    }
+    
+clean:
+    freeaddrinfo(info);
+    
+    return SX_SUCCESS;
+}
+
+
 
 SXSocketRef SXCreateServerSocket(unsigned short port,
                                  int domain,
@@ -104,8 +99,9 @@ SXSocketRef SXCreateServerSocket(unsigned short port,
     sockPtr->domain = domain;
     sockPtr->type = type;
     sockPtr->protocol = protocol;
-    sockPtr->ref_count = 1;
     sockPtr->port = port;
+
+    sx_obj_init(&sockPtr->obj, &SXFreeSocket);
     socklen_t addrlen;
     
     memset(&sockPtr->addr, 0, sizeof(struct sockaddr_storage));
@@ -142,6 +138,11 @@ SXSocketRef SXCreateServerSocket(unsigned short port,
         ERR_RET(SX_ERROR_SYS_SETSOCKOPT);
     }
     
+    if (setsockopt(sockPtr->sockfd, SOL_SOCKET, SO_NOSIGPIPE, &yes, sizeof(int)) == -1) {
+        perror("setsockopt");
+        ERR_RET(SX_ERROR_SYS_SETSOCKOPT);
+    }
+    
     if (bind(sockPtr->sockfd, (struct sockaddr *)&sockPtr->addr, addrlen) == -1) {
         perror("bind");
         ERR_RET(SX_ERROR_SYS_BIND);
@@ -150,6 +151,24 @@ SXSocketRef SXCreateServerSocket(unsigned short port,
     ERR_RET(SX_SUCCESS);
     
     return sockPtr;
+}
+
+SXSocketRef SXCreateClientSocketByHostname(const char * hostname,
+                                           const char * service,
+                                           SXError * err_ret) {
+    SXSocketRef sockPtr = (SXSocketRef)sx_calloc(1, sizeof(sx_socket_t));
+    sx_obj_init(&sockPtr->obj, &SXFreeSocket);
+    *err_ret = dns_lookup(sockPtr, hostname, service, NULL);
+    if ((sockPtr->sockfd = socket(sockPtr->domain, sockPtr->type, sockPtr->protocol)) == -1) {
+        perror("socket");
+        ERR_RET(SX_ERROR_SYS_SOCKET);
+    }
+    int yes = 1;
+    if (setsockopt(sockPtr->sockfd, SOL_SOCKET, SO_NOSIGPIPE, &yes, sizeof(int)) == -1) {
+        perror("setsockopt");
+        ERR_RET(SX_ERROR_SYS_SETSOCKOPT);
+    }
+    return SX_SUCCESS;
 }
 
 SXSocketRef SXCreateClientSocket(const char * ipaddr,
@@ -167,7 +186,7 @@ SXSocketRef SXCreateClientSocket(const char * ipaddr,
     sockPtr->protocol = protocol;
     sockPtr->type = type;
     sockPtr->domain = domain;
-    sockPtr->ref_count = 1;
+    sx_obj_init(&sockPtr->obj, &SXFreeSocket);
     socklen_t addrlen;
 
     memset(&sockPtr->addr, 0, sizeof(struct sockaddr_storage));
@@ -195,23 +214,18 @@ SXSocketRef SXCreateClientSocket(const char * ipaddr,
             return NULL;
     }
     
+    int yes = 1;
+    
+    if (setsockopt(sockPtr->sockfd, SOL_SOCKET, SO_NOSIGPIPE, &yes, sizeof(int)) == -1) {
+        perror("setsockopt");
+        ERR_RET(SX_ERROR_SYS_SETSOCKOPT);
+    }
+    
     sockPtr->addr.ss_family = domain;
     
     ERR_RET(SX_SUCCESS);
     
     return sockPtr;
-}
-
-SXError SXSocketSetBlock(SXSocketRef sock, bool block)
-{
-    int flags;
-    if ((flags = fcntl(sock->sockfd, F_GETFL, 0)) < 0)
-        return SX_ERROR_SYS_FCNTL;
-    flags = block ? (flags &~ O_NONBLOCK) : (flags | O_NONBLOCK);
-    if ((flags = fcntl(sock->sockfd, F_SETFL, flags)) < 0)
-        return SX_ERROR_SYS_FCNTL;
-    sock->blocking = block;
-    return SX_SUCCESS;
 }
 
 SXError SXSocketConnect(SXSocketRef socket)
