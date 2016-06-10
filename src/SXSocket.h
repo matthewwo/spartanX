@@ -76,6 +76,7 @@ SXSocketRef SXCreateServerSocket(unsigned short port,
 
 SXSocketRef SXCreateClientSocketByHostname(const char * hostname,
                                            const char * service,
+                                           struct addrinfo * hint,
                                            SXError * err_ret);
 
 SXSocketRef SXCreateClientSocket(const char * ipaddr,

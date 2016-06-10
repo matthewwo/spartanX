@@ -26,7 +26,7 @@ class BurgerKing: SXRuntimeDataDelegate {
     
     func didReceiveData(object: SXRuntimeObject, data: NSMutableData) -> Bool {
         let queue = object as! SXStreamQueue
-        
+        print("Received");
         queue.socket.send("Your burger is ready.".dataUsingEncoding(NSASCIIStringEncoding)!, flags: 0)
 
         return true
@@ -48,7 +48,7 @@ class Apple: SXRuntimeDataDelegate, SXRuntimeStreamObjectDelegate {
     
     func didReceiveData(object: SXRuntimeObject, data: NSMutableData) -> Bool {
         let queue = object as! SXStreamQueue
-        
+        print("Received");
         queue.socket.send("Sorry, nothing for you.".dataUsingEncoding(NSASCIIStringEncoding)!, flags: 0)
         
         return true
@@ -64,7 +64,7 @@ class Dispatch: SXRuntimeDataDelegate {
     
     func didReceiveData(object: SXRuntimeObject, data: NSMutableData) -> Bool {
         let queue = object as! SXStreamQueue
-        
+        print("Received");
         if let payload_string = String(data: data, encoding: NSASCIIStringEncoding) {
             
            

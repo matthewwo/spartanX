@@ -46,10 +46,15 @@ sx_runtime_status_handler;\
 sx_runtime_object_handler;\
 sx_runtime_data_handler;
 
+
+SXError SXSuspendObject(sx_runtime_object_t * obj);
+SXError SXResumeObject(sx_runtime_object_t * obj);
+
 SXError SXRetain(SXObjectRef);
 SXError SXRelease(SXObjectRef);
 SXError SXFree(SXObjectRef);
 
 void sx_obj_init(SXObjectRef obj, sx_deallocator dealloc);
+void sx_runtime_obj_init(sx_runtime_object_t * obj, sx_deallocator dealloc);
 
 #endif /* sx_object_h */

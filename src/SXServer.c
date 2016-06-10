@@ -288,7 +288,10 @@ SXError SXServerStart(SXServerRef server,
                 SXRetain(server);
                 bool suspended = false;
                 eval_if_exist_q(didConnect, (queue));
-                sx_byte buf[server->dataSize];
+                
+                
+//                sx_byte buf[server->dataSize];
+                sx_byte * buf = (sx_byte *)sx_calloc(server->dataSize, sizeof(sx_byte));
                 
                 do {
                     memset(buf, 0, sizeof(sx_byte) * server->dataSize);

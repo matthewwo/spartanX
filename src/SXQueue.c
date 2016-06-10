@@ -31,9 +31,6 @@
 
 #include "SXQueue.h"
 
-#define SXCHECK_COMPATIBLES(arr, c) SX_RETURN_ERR(SXCheckCompatibleStatus(queue->status,arr, c))
-#define SXCHECK_INCOMPATIBLES(arr, c) SX_RETURN_ERR(SXCheckIncompatibleStatus(queue->status,arr, c))
-
 SXQueueRef SXCreateQueue(SXSocketRef socket, dispatch_queue_t queue, SXError * err_ret)
 {
     SXQueueRef _queue = (SXQueueRef)sx_calloc(1, sizeof(sx_queue_t));
@@ -49,29 +46,6 @@ SXQueueRef SXCreateQueue(SXSocketRef socket, dispatch_queue_t queue, SXError * e
     _queue->sock = socket;
     
     return _queue;
-}
-
-SXError SXSuspendQueue(SXQueueRef queue)
-{
-    if (queue== NULL)
-        return SX_ERROR_INVALID_SERVER;
-    
-    sx_status_t a[2] = {sx_status_idle, sx_status_running};
-    SXCHECK_COMPATIBLES(a, 2);
-    
-    queue->status = sx_status_suspend;
-    return SX_SUCCESS;
-}
-
-SXError SXResumeQueue(SXQueueRef queue)
-{
-    if (queue == NULL)
-        return SX_ERROR_INVALID_SERVER;
-    
-    SX_RETURN_ERR(SXCheckStatus(queue->status, sx_status_suspend));
-    
-    queue->status = sx_status_resuming;
-    return SX_SUCCESS;
 }
 
 SXError SXFreeQueue(SXQueueRef queue)

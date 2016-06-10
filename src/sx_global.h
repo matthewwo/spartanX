@@ -72,6 +72,14 @@ typedef unsigned    long    sx_uint64;
 typedef             long    sx_int64;
 typedef             char    sx_byte;
 
-
+enum sx_status {
+    sx_status_idle      = 0,
+    sx_status_running   = 1,
+    sx_status_resuming  = 2,
+    sx_status_suspend   = 3,
+    sx_status_should_terminate = 4,
+    sx_status_ignored   = 5,
+    sx_status_should_kill = 6
+};
 
 #endif /* types_h */

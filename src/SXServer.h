@@ -130,8 +130,9 @@ SXError SXServerStart2(SXServerRef server,
 #endif
 
 SXError SXFreeServer    (SXServerRef);
-SXError SXSuspendServer (SXServerRef);
-SXError SXResumeServer  (SXServerRef);
 SXError SXKillServer    (SXServerRef);
+
+//SXError SXSuspendServer (SXServerRef);
+//SXError SXResumeServer  (SXServerRef);
 
 #endif /* SXServer_h */

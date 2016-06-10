@@ -46,30 +46,22 @@ SXError SXCheckCompatibleStatus(sx_status_t current, sx_status_t * array, size_t
 
 SXError SXCheckIncompatibleStatus(sx_status_t current, sx_status_t * array, size_t count);
 
-enum sx_status {
-    sx_status_idle      = 0,
-    sx_status_running   = 1,
-    sx_status_resuming  = 2,
-    sx_status_suspend   = 3,
-    sx_status_should_terminate = 4,
-    sx_status_ignored   = 5,
-    sx_status_should_kill = 6
-};
-
 typedef struct sx_queue
 {
     sx_runtime_items;
-    __unsafe_unretained dispatch_queue_t gcd_queue;
-
+    sx_runtime_object_t * owner;
     void * udata;
-    void * udata2;
+    void * udata1;
+    
+    __unsafe_unretained dispatch_queue_t gcd_queue;
 } sx_queue_t;
 
 typedef struct sx_queue * SXQueueRef;
 
 SXQueueRef  SXCreateQueue   (SXSocketRef socket, dispatch_queue_t queue, SXError * err_ret);
-SXError     SXSuspendQueue  (SXQueueRef queue);
-SXError     SXResumeQueue   (SXQueueRef queue);
 SXError     SXFreeQueue     (SXQueueRef queue);
+
+//SXError     SXSuspendQueue  (SXQueueRef queue);
+//SXError     SXResumeQueue   (SXQueueRef queue);
 
 #endif /* SXQueue_h */

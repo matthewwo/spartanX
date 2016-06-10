@@ -155,10 +155,11 @@ SXSocketRef SXCreateServerSocket(unsigned short port,
 
 SXSocketRef SXCreateClientSocketByHostname(const char * hostname,
                                            const char * service,
+                                           struct addrinfo * hint,
                                            SXError * err_ret) {
     SXSocketRef sockPtr = (SXSocketRef)sx_calloc(1, sizeof(sx_socket_t));
     sx_obj_init(&sockPtr->obj, &SXFreeSocket);
-    *err_ret = dns_lookup(sockPtr, hostname, service, NULL);
+    *err_ret = dns_lookup(sockPtr, hostname, service, hint);
     if ((sockPtr->sockfd = socket(sockPtr->domain, sockPtr->type, sockPtr->protocol)) == -1) {
         perror("socket");
         ERR_RET(SX_ERROR_SYS_SOCKET);
