@@ -23,8 +23,9 @@ void sx_runtime_obj_init(sx_runtime_object_t * obj, sx_deallocator dealloc) {
     obj->status = sx_status_idle;
 }
 
-SXError SXSuspendObject(sx_runtime_object_t * obj)
+SXError SXSuspendObject(void * sx_runtime_obj)
 {
+    sx_runtime_object_t * obj = (sx_runtime_object_t *)sx_runtime_obj;
     if (obj== NULL)
         return SX_ERROR_INVALID_SERVER;
     
@@ -35,8 +36,9 @@ SXError SXSuspendObject(sx_runtime_object_t * obj)
     return SX_SUCCESS;
 }
 
-SXError SXResumeObject(sx_runtime_object_t * obj)
+SXError SXResumeObject(void * sx_runtime_obj)
 {
+    sx_runtime_object_t * obj = (sx_runtime_object_t *)sx_runtime_obj;
     if (obj == NULL)
         return SX_ERROR_INVALID_SERVER;
     
@@ -46,7 +48,8 @@ SXError SXResumeObject(sx_runtime_object_t * obj)
     return SX_SUCCESS;
 }
 
-SXError SXRetain(SXObjectRef obj) {
+SXError SXRetain(void * sx_object) {
+    SXObjectRef obj = (SXObjectRef) sx_object;
     if (obj->ref_count == sx_weak_object) {
         return SX_SUCCESS;
     }
@@ -54,7 +57,8 @@ SXError SXRetain(SXObjectRef obj) {
     return SX_SUCCESS;
 }
 
-SXError SXRelease(SXObjectRef obj) {
+SXError SXRelease(void * sx_object) {
+    SXObjectRef obj = (SXObjectRef) sx_object;
     if (obj->ref_count == sx_weak_object)
         return SX_SUCCESS;
     --obj->ref_count;
@@ -63,7 +67,8 @@ SXError SXRelease(SXObjectRef obj) {
     return SX_SUCCESS;
 }
 
-SXError SXFree(SXObjectRef obj) {
+SXError SXFree(void * sx_object) {
+    SXObjectRef obj = (SXObjectRef) sx_object;
     return obj->dealloc(obj);
 }
 

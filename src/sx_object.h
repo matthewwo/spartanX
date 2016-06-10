@@ -13,6 +13,8 @@
 #include "sx_global.h"
 #include "SXError.h"
 
+#define sx_runtime_obj_cast(v) (sx_runtime_object_t *)(v)
+#define sx_runtime_obj_get_sock(v) (sx_runtime_obj_cast(v))->sock
 typedef struct sx_socket * SXSocketRef;
 typedef struct sx_queue * SXQueueRef;
 typedef struct sx_object * SXObjectRef;
@@ -29,6 +31,8 @@ typedef struct sx_runtime_object {
     size_t dataSize;
     int recvFlags;
     int sendFlags;
+    void * udata;
+    void * udata1;
     sx_status_t status;
     sx_runtime_status_handler;
     sx_runtime_object_handler;
@@ -41,18 +45,20 @@ SXSocketRef sock;\
 size_t dataSize;\
 int recvFlags;\
 int sendFlags;\
+void * udata;\
+void * udata1;\
 sx_status_t status;\
 sx_runtime_status_handler;\
 sx_runtime_object_handler;\
 sx_runtime_data_handler;
 
+/* takes sx_runtime_object_t only */
+SXError SXSuspendObject(void * sx_runtime_obj);
+SXError SXResumeObject(void * sx_runtime_obj);
 
-SXError SXSuspendObject(sx_runtime_object_t * obj);
-SXError SXResumeObject(sx_runtime_object_t * obj);
-
-SXError SXRetain(SXObjectRef);
-SXError SXRelease(SXObjectRef);
-SXError SXFree(SXObjectRef);
+SXError SXRetain(void * sx_object);
+SXError SXRelease(void * sx_object);
+SXError SXFree(void * sx_object);
 
 void sx_obj_init(SXObjectRef obj, sx_deallocator dealloc);
 void sx_runtime_obj_init(sx_runtime_object_t * obj, sx_deallocator dealloc);

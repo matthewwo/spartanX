@@ -36,6 +36,8 @@
 #include "SXSocket.h"
 #include "SXError.h"
 
+#define sx_client_ref(v) ((SXClientRef)(v))
+
 typedef struct sx_client * SXClientRef;
 
 enum sx_client_type {
@@ -47,8 +49,6 @@ typedef struct sx_client {
     sx_runtime_items;
     
     sx_runtime_object_t * owner;
-    void * udata;
-    void * udata1;
     enum sx_client_type type;
     dispatch_queue_priority_t priority;
     sx_byte * buf;
@@ -69,6 +69,10 @@ SXClientRef SXCreateClientWithIp(const char * ip,
                                  int buf_size,
                                  dispatch_queue_priority_t priority,
                                  SXError * err_ret);
+
+#define SXClientTCP_IPv4(ip, port, buf_size) SXCreateClientWithIp(ip, port, AF_INET, SOCK_STREAM, 0, buf_size, GCD_DEFAULT, NULL);
+
+#define SXClientTCP_IPv6(ip, port, buf_size) SXCreateClientWithIp(ip, port, AF_INET6, SOCK_STREAM, 0, buf_size, GCD_DEFAULT, NULL);
 
 SXError SXStartClient(SXClientRef client, void * initialPayload, size_t len);
 

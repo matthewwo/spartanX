@@ -79,38 +79,6 @@ void SXServerSetBlockShouldConnect
 {
     server->shouldConnect_block = b;
 }
-//
-//void SXServerSetBlockDidConnect
-//(SXServerRef server, didConnect b ) {
-//    server->didConnect_block = b;
-//}
-//
-//void SXServerSetBlockDidReceive
-//(SXServerRef server, didReceive b ) {
-//    server->dataHandler_block = b;
-//}
-//
-//void SXServerSetBlockDidDisconnect
-//(SXServerRef server, didDisconnect b )
-//{
-//    server->didDisconnect_block = b;
-//}
-//
-//void SXServerSetBlockWillSuspend
-//(SXServerRef server, willSuspend b)
-//{
-//    server->willSuspend_block = b;
-//}
-//
-//void SXServerSetBlockDidResume
-//(SXServerRef server, didResume b ) {
-//    server->didResume_block = b;
-//}
-//
-//void SXServerSetBlockWillKill
-//(SXServerRef server, willKill b ) {
-//    server->willKill_block = b;
-//}
 
 void SXServerSetBlockDidKill
 (SXServerRef server, didKill b ) {
@@ -289,8 +257,6 @@ SXError SXServerStart(SXServerRef server,
                 bool suspended = false;
                 eval_if_exist_q(didConnect, (queue));
                 
-                
-//                sx_byte buf[server->dataSize];
                 sx_byte * buf = (sx_byte *)sx_calloc(server->dataSize, sizeof(sx_byte));
                 
                 do {

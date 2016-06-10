@@ -45,9 +45,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-//#ifdef __cplusplus
-//#include "SXServer.hpp"
-//#else
-//#include "SXServer.h"
-//#endif
 #endif /* spartanX_h */

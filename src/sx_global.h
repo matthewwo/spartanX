@@ -57,6 +57,10 @@ extern "C" {
 #endif
 
 
+#define GCD_DEFAULT     DISPATCH_QUEUE_PRIORITY_DEFAULT
+#define GCD_LOW         DISPATCH_QUEUE_PRIORITY_LOW
+#define GCD_HIGH        DISPATCH_QUEUE_PRIORITY_HIGH
+#define GCD_BACKGROUND  DISPATCH_QUEUE_PRIORITY_BACKGROUND
 
 #define contains_flag(options, option) ((options & option) == option)
 

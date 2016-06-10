@@ -32,7 +32,6 @@
 #include "SXClient.h"
 
 SXError SXFreeClient(SXClientRef client) {
-    printf("freed\n");
     SXRelease(client->sock);
     sx_free(client->buf);
     sx_free(client);
@@ -96,9 +95,10 @@ SXError SXStartClient(SXClientRef client, void * initialPayload, size_t len) {
             switch (client->status) {
                 case sx_status_running:
                     s = recv(client->sock->sockfd,client->buf, client->dataSize, client->recvFlags);
-                    if (s == -1 || 0)
+                    if (s == -1 || 0 || client == NULL)
                         goto exit;
-                    s = client->dataHandler_block(client, client->buf, s);
+                    if (client->dataHandler_block != NULL)
+                        s = client->dataHandler_block(client, client->buf, s);
                     break;
                 
                 case sx_status_resuming:
@@ -114,7 +114,7 @@ SXError SXStartClient(SXClientRef client, void * initialPayload, size_t len) {
                     suspended = true;
                     
                     size_t len = recv(client->sock->sockfd, client->buf, client->dataSize, client->recvFlags);
-                    if (len == 0 || len == -1) goto exit;
+                    if (len == 0 || len == -1 || client == NULL) goto exit;
                     
                     switch (client->status) {
                         case sx_status_should_terminate:
@@ -123,7 +123,8 @@ SXError SXStartClient(SXClientRef client, void * initialPayload, size_t len) {
                             
                         case sx_status_resuming:
                         case sx_status_running:
-                            s = client->dataHandler_block(client, client->buf, s);
+                            if (client->dataHandler_block != NULL)
+                                s = client->dataHandler_block(client, client->buf, s);
                             break;
                             
                         default:
@@ -138,7 +139,7 @@ SXError SXStartClient(SXClientRef client, void * initialPayload, size_t len) {
         } while (s > 0);
         
     exit:
-//        sx_free(buf);
+
         SXRelease(client->sock);
         if (client->didDisconnect_block != NULL)
             client->didDisconnect_block(client);
