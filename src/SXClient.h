@@ -48,7 +48,7 @@ enum sx_client_type {
 typedef struct sx_client {
     sx_runtime_items;
     
-    sx_runtime_object_t * owner;
+//    sx_runtime_object_t * owner;
     enum sx_client_type type;
     dispatch_queue_priority_t priority;
     sx_byte * buf;

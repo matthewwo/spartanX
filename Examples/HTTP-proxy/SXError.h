@@ -63,6 +63,7 @@ typedef enum SXError
     SX_ERROR_SYS_KQUEUE                 = -22,
     SX_ERROR_SYS_KEVENT                 = -23,
     SX_ERROR_SYS_GET_ADDR_INFO          = -24,
+    
     SX_ERROR_CREATE_THREAD              = -40,
     SX_ERROR_CREATE_QUEUE               = -41
 } SXError;

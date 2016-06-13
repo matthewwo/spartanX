@@ -49,10 +49,6 @@ SXError SXCheckIncompatibleStatus(sx_status_t current, sx_status_t * array, size
 typedef struct sx_queue
 {
     sx_runtime_items;
-    sx_runtime_object_t * owner;
-    void * udata;
-    void * udata1;
-    
     __unsafe_unretained dispatch_queue_t gcd_queue;
 } sx_queue_t;
 
@@ -60,8 +56,5 @@ typedef struct sx_queue * SXQueueRef;
 
 SXQueueRef  SXCreateQueue   (SXSocketRef socket, dispatch_queue_t queue, SXError * err_ret);
 SXError     SXFreeQueue     (SXQueueRef queue);
-
-//SXError     SXSuspendQueue  (SXQueueRef queue);
-//SXError     SXResumeQueue   (SXQueueRef queue);
 
 #endif /* SXQueue_h */

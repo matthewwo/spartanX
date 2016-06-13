@@ -86,6 +86,8 @@ func proxy_demo() {
                         /* bind the client to our queue */
                         queue.bindobj(&client)
                         (client as! SXStreamClient).start(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), initialPayload: data)
+                        print(String(data: data, encoding:  NSUTF8StringEncoding))
+                        print(data.length)
 
                     }
                 } else {

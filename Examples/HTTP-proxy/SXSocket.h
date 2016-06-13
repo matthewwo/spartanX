@@ -44,20 +44,22 @@
 
 #include "sx_global.h"
 #include "SXError.h"
+#include "sx_object.h"
 
 #define sockaddr_in(addr) (*((struct sockaddr_in*)&addr))
 #define sockaddr_in6(addr) (*((struct sockaddr_in6*)&addr))
 
-typedef struct _SXSocket {
+typedef struct sx_socket {
+    sx_object_t obj; /* `super class` */
+    
     int sockfd;
     int protocol;
     int domain;
     int type;
+    
     int port;
-    bool blocking;
-
     struct sockaddr_storage addr;
-    unsigned int ref_count;
+    
     
 } sx_socket_t;
 
@@ -72,7 +74,10 @@ SXSocketRef SXCreateServerSocket(unsigned short port,
 #define SXCreateServerSocketTCPIPv4(port, err_ret) SXCreateServerSocket(port, AF_INET, SOCK_STREAM, 0, &err_ret)
 #define SXCreateServerSocketTCPIPv6(port, err_ret) SXCreateServerSocket(port, AF_INET6, SOCK_STREAM, 0, &err_ret)
 
-SXSocketRef SXCreateClientSocketByInfo(struct addrinfo * info, const char * service, SXError * err_ret);
+SXSocketRef SXCreateClientSocketByHostname(const char * hostname,
+                                           const char * service,
+                                           struct addrinfo * hint,
+                                           SXError * err_ret);
 
 SXSocketRef SXCreateClientSocket(const char * ipaddr,
                                  unsigned short port,
@@ -89,8 +94,7 @@ SXSocketRef SXCreateClientSocket(const char * ipaddr,
 
 SXError SXSocketSetBlock(SXSocketRef sock, bool block);
 SXError SXSocketSend    (SXSocketRef target, const void * payload, size_t length);
-SXError SXRetainSocket  (SXSocketRef socket);
-SXError SXReleaseSocket (SXSocketRef socket);
+
 SXError SXFreeSocket    (SXSocketRef socket);
 SXError SXSocketConnect (SXSocketRef socket);
 SXError SXSocketListen  (SXSocketRef socket);

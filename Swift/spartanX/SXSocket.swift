@@ -135,6 +135,8 @@ public class SXRemoteSocket: SXSocket {
         self.type = type
         self.`protocol` = `protocol`
         self.bufsize = bufsize
+        var yes = 1
+        setsockopt(sockfd, SOL_SOCKET, SO_NOSIGPIPE, &yes, UInt32(sizeof(Int32)))
     }
 }
 

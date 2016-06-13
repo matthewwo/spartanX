@@ -48,35 +48,32 @@ SXError dns_lookup(SXSocketRef socket, const char * hostname, const char * servi
     
     cinfo = info;
     
-    while (cinfo != NULL) {
-        cinfo = cinfo->ai_next;
-        short port = htons(getservbyname(service, NULL)->s_port);
-        memset(&socket->addr, 0, sizeof(struct sockaddr_storage));
-        switch (cinfo->ai_family) {
-            case AF_INET:
-                socket->domain = AF_INET;
-                socket->type = cinfo->ai_socktype;
-                socket->protocol = cinfo->ai_protocol;
-                
-                sockaddr_in(socket->addr).sin_len = sizeof(struct sockaddr_in);
-                sockaddr_in(socket->addr).sin_family = AF_INET;
-                sockaddr_in(socket->addr).sin_addr = sockaddr_in(cinfo->ai_addr).sin_addr;
-                sockaddr_in(socket->addr).sin_port = port;
-                goto clean;
-            case AF_INET6:
-                sockaddr_in6(socket->addr).sin6_len = sizeof(struct sockaddr_in6);
-                sockaddr_in6(socket->addr).sin6_family = AF_INET6;
-                sockaddr_in6(socket->addr).sin6_port = port;
-                sockaddr_in6(socket->addr).sin6_addr = sockaddr_in6(cinfo->ai_addr).sin6_addr;
-                goto clean;
-            default:
-                goto cont;
+    for (cinfo = info; cinfo != NULL; cinfo = cinfo->ai_next) {
+        short port = getservbyname(service, NULL)->s_port;
+
+        if (cinfo->ai_socktype == SOCK_STREAM) {
+            memset(&socket->addr, 0, sizeof(struct sockaddr_storage));
+            switch (cinfo->ai_family) {
+                case AF_INET:
+                    socket->domain = AF_INET;
+                    socket->type = cinfo->ai_socktype;
+                    socket->protocol = cinfo->ai_protocol;
+                    
+                    sockaddr_in(socket->addr).sin_len = sizeof(struct sockaddr_in);
+                    sockaddr_in(socket->addr).sin_family = AF_INET;
+                    sockaddr_in(socket->addr).sin_addr = ((struct sockaddr_in *)cinfo->ai_addr)->sin_addr;
+                    sockaddr_in(socket->addr).sin_port = port;
+                    goto clean;
+                    
+                case AF_INET6:
+                    sockaddr_in6(socket->addr).sin6_len = sizeof(struct sockaddr_in6);
+                    sockaddr_in6(socket->addr).sin6_family = AF_INET6;
+                    sockaddr_in6(socket->addr).sin6_port = port;
+                    sockaddr_in6(socket->addr).sin6_addr = sockaddr_in6(cinfo->ai_addr).sin6_addr;
+                    goto clean;
+            }
         }
-        
-    cont:
-        continue;
     }
-    
 clean:
     freeaddrinfo(info);
     
@@ -159,17 +156,23 @@ SXSocketRef SXCreateClientSocketByHostname(const char * hostname,
                                            SXError * err_ret) {
     SXSocketRef sockPtr = (SXSocketRef)sx_calloc(1, sizeof(sx_socket_t));
     sx_obj_init(&sockPtr->obj, &SXFreeSocket);
-    *err_ret = dns_lookup(sockPtr, hostname, service, hint);
+    SXError err;
+    err = dns_lookup(sockPtr, hostname, service, NULL);
+    
+    if (err_ret)
+        *err_ret = err;
+    
     if ((sockPtr->sockfd = socket(sockPtr->domain, sockPtr->type, sockPtr->protocol)) == -1) {
         perror("socket");
         ERR_RET(SX_ERROR_SYS_SOCKET);
     }
+    
     int yes = 1;
     if (setsockopt(sockPtr->sockfd, SOL_SOCKET, SO_NOSIGPIPE, &yes, sizeof(int)) == -1) {
         perror("setsockopt");
         ERR_RET(SX_ERROR_SYS_SETSOCKOPT);
     }
-    return SX_SUCCESS;
+    return sockPtr;
 }
 
 SXSocketRef SXCreateClientSocket(const char * ipaddr,
@@ -231,6 +234,7 @@ SXSocketRef SXCreateClientSocket(const char * ipaddr,
 
 SXError SXSocketConnect(SXSocketRef socket)
 {
+    
     if (connect(socket->sockfd,
                 (struct sockaddr *)&(socket->addr),
                 socket->domain == AF_INET6 ?

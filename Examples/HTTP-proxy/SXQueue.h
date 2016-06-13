@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include "SXSocket.h"
 #include "SXError.h"
-#include "SXEventHandler.h"
+#include "sx_event.h"
 
 #include <dispatch/dispatch.h>
 
@@ -46,42 +46,15 @@ SXError SXCheckCompatibleStatus(sx_status_t current, sx_status_t * array, size_t
 
 SXError SXCheckIncompatibleStatus(sx_status_t current, sx_status_t * array, size_t count);
 
-enum sx_status {
-    sx_status_idle      = 0,
-    sx_status_running   = 1,
-    sx_status_resuming  = 2,
-    sx_status_suspend   = 3,
-    sx_status_should_terminate = 4,
-    sx_status_ignored   = 5,
-    sx_status_should_kill = 6
-};
-
 typedef struct sx_queue
 {
+    sx_runtime_items;
     __unsafe_unretained dispatch_queue_t gcd_queue;
-    SXSocketRef sock;
-    sx_status_t status;
-    
-#ifdef  __BLOCKS__
-    SXServerHandlers_block;
-#endif
-#ifdef __cplusplus
-    SXServerHandlers_cpp_fn;
-#else
-    SXServerHandlers_c_fnptr;
-#endif
-    void * udata;
-    void * udata2;
-    unsigned int ref_count;
 } sx_queue_t;
 
 typedef struct sx_queue * SXQueueRef;
 
 SXQueueRef  SXCreateQueue   (SXSocketRef socket, dispatch_queue_t queue, SXError * err_ret);
-SXError     SXSuspendQueue  (SXQueueRef queue);
-SXError     SXResumeQueue   (SXQueueRef queue);
 SXError     SXFreeQueue     (SXQueueRef queue);
-SXError     SXRetainQueue   (SXQueueRef queue);
-SXError     SXReleaseQueue  (SXQueueRef queue);
 
 #endif /* SXQueue_h */

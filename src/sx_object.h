@@ -34,6 +34,7 @@ typedef struct sx_runtime_object {
     void * udata;
     void * udata1;
     sx_status_t status;
+    sx_runtime_object_t * owner;
     sx_runtime_status_handler;
     sx_runtime_object_handler;
     sx_runtime_data_handler;
@@ -48,10 +49,10 @@ int sendFlags;\
 void * udata;\
 void * udata1;\
 sx_status_t status;\
+sx_runtime_object_t * owner;\
 sx_runtime_status_handler;\
 sx_runtime_object_handler;\
 sx_runtime_data_handler;
-
 /* takes sx_runtime_object_t only */
 SXError SXSuspendObject(void * sx_runtime_obj);
 SXError SXResumeObject(void * sx_runtime_obj);

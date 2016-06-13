@@ -30,6 +30,7 @@
 //  Copyright © 2016 yuuji. All rights reserved.
 
 #include <stdio.h>
+
 #include "spartanX.h"
 
 
@@ -39,176 +40,71 @@
 #include "SXVector.h"
 #include "SXString.h"
 
-/* a very minimal way to check if the uri is hostname or ip.
- * notice that this example does not parse ipv6 and port num,
- * however, it is pretty easy to parse and implement by yourself
- */
-bool requestIsHostname(SXStringRef string) {
-    struct sockaddr_storage a;
-    return inet_pton(AF_INET, string->chars, &a);
-}
 
-/*  Trim protocol-like scheme
- *  for example: [http://]
- */
-void trimURLProtocol(SXStringRef string, size_t offset) {
-    size_t loca = SXStringSubStringLocation(string, "://", 3, 0);
-    SXStringRemovingRange(string, (sx_range_t){loca - offset, loca - offset + 3});
-}
-
-/*   This function rewrite the http request (string)
- *   as shown as below, and return the hostname for
- *   for dns loopup.
- *
- *   GET http://www.example.org/index.html HTTPx/x
- *   Host: www.example.org
- *
- *   to the form
- *
- *   GET /index.html
- *   Host: www.example.org
- */
 SXStringRef parseRequest(SXStringRef string) {
     
     SXVectorRef lines = SXStringSubStringsTrimmedByCString(string, "\r\n", 2);
-    SXStringRef firstline = *(SXStringRef *)SXVectorObjectPtrAtIndex(lines, 0);
-    SXStringRef originalFirstline = SXCreateStringWithCString(firstline->chars, firstline->length);
-    SXStringRef domain;
+    SXStringRef hostname = NULL;
     
-    {
-        SXVectorRef is = SXStringSubCStringLocations(firstline, " ", 1);
-        size_t loca = *(int *)SXVectorObjectPtrAtIndex(is, 0);
-        trimURLProtocol(firstline, loca + 1);
+    if (lines->count >= 2) {
         
-        
-        SXStringRef secline = *(SXStringRef *)SXVectorObjectPtrAtIndex(lines, 1);
-        SXVectorRef a = SXStringSubStringsTrimmedByCString(secline , " ", 1);
-        
-        SXStringRef hostname = *(SXStringRef *)SXVectorObjectPtrAtIndex(a, 1);
-        domain = SXCreateStringWithCString(hostname->chars, hostname->length);
-        
-        // rewrite the first occur is good enough for us.
-        SXStringRemoveOcurrenceOfCString(firstline, hostname->chars, hostname->length);
-        
-        SXReleaseVector(a);
-        SXReleaseVector(is);
+        {
+            SXStringRef secline = *(SXStringRef *)SXVectorObjectPtrAtIndex(lines, 1);
+            SXVectorRef a = SXStringSubStringsTrimmedByCString(secline , " ", 1);
+            if (a->count >= 2) {
+                hostname = *(SXStringRef *)SXVectorObjectPtrAtIndex(a, 1);
+                SXRetainString(hostname);
+            }
+            SXReleaseVector(a);
+        }
     }
     
-    SXStringReplacingOccurrencesOfString(string, originalFirstline, firstline);
-    SXReleaseString(originalFirstline);
     SXReleaseVector(lines);
     
-    return domain;
+    return hostname;
 }
 
-block_SXClientDidReceive cl = ^size_t(SXClientRef client, void * data, size_t length) {
-    SXRetainSocket(client->socket);
-    if (((SXQueueRef)client->udata)->sock == NULL) {
-        // just for safe, should never call
-        printf("SOcket is NULL\n");
-    }else {
-        SXSocketSend(((SXQueueRef)client->udata)->sock, data, length);
-    }
-    SXReleaseSocket(client->socket);
-    return length;
-};
 
 
 int main(int argc, const char * argv[]) {
-    
-    /* The first arugment of `SXCreateServer` takes a struct
-     * defined as:
-     *
-     *      typedef struct sx_server_setup {
-     *          unsigned domain;
-     *          unsigned port;
-     *          size_t   backlog;
-     *          size_t   dataSize;
-     *          size_t   max_guest;
-     *          bool     failable;  //reserved, not yet implemented
-     *      } sx_server_setup;
-     *
-     * the `NULL` part will return errors, but it is
-     * not yet implemented.
-     */
-    
-//    SXServerRef proxyServer = SXCreateServer({AF_INET, 8080, 600000, 20480, 5000, false}, NULL, ^size_t(SXServerRef server, SXQueueRef queue, void *data, size_t length) {
-    
-    sx_server_setup setup = {AF_INET, 8080, 600000, 20480, 5000, false};
-    
-    SXServerRef proxyServer = SXCreateServer(setup, NULL, ^size_t(SXServerRef server, SXQueueRef queue, void *data, size_t length) {
-        // yes, the data handler will be call even when recv() returns 0 (disconnect)
-        // the framework is designed to offer as much info as possible
-        if (length == 0) return 0;
-        
-        SXStringRef string = SXCreateStringWithCString((char *)data, length + 1);
-        SXStringRef domain = parseRequest(string);
+    sx_server_setup setup = {AF_INET, 8080, 50, 819200, 500, false};
+    SXServerRef server = SXCreateServer(setup, NULL, ^size_t(sx_runtime_object_t *queue, void *data, size_t length) {
+
         
         if (queue->udata == NULL) {
             
-            SXClientRef client;
+            SXStringRef raw = SXCreateStringWithCString((char *)data, length);
+            SXStringRef host = parseRequest(raw);
+            SXReleaseString(raw);
             
+            if (host) {
+                queue->udata = SXCreateClientWithHostname(host->chars, "http", NULL, 5000, GCD_HIGH, NULL);
+                SXReleaseString(host);
+        
+                SXRuntimeObjectSetBlockDidReceive(sx_runtime_obj_cast(queue->udata), ^size_t(sx_runtime_object_t *object, void *data, size_t length) {
+                    
+                    SXSocketSend(queue->sock, data, length);
+                    return length;
+                });
+                
+                SXStartClient(sx_client_ref(queue->udata), data, length);
+            }
+            return length;
             
-            /* if you're interested to build a more functional proxy,
-             * feel free to parse and pass the port number, or the
-             * service
-             */
-            if (requestIsHostname(domain))
-                client = SXCreateClientWithIp(domain->chars,
-                                              80,
-                                              AF_INET,
-                                              SOCK_STREAM,
-                                              0,
-                                              50000,
-                                              DISPATCH_QUEUE_PRIORITY_HIGH,
-                                              NULL);
-            else
-                client = SXCreateClientWithHostname(domain->chars,
-                                                    "http", SOCK_STREAM,
-                                                    AF_INET,
-                                                    50000,
-                                                    DISPATCH_QUEUE_PRIORITY_HIGH,
-                                                    NULL);
-            
-            
-            client->dataHandler_block = cl;
-            
-            // use the udata of the queue and client to bridge them
-            queue->udata = client;
-            client->udata = queue;
-            
-            client->disconnect_block = ^(SXClientRef client) {
-                // put whatever you want to do when client finished its section
-            };
-            
-            SXStartClient(client, true);
-            
+        } else {
+            if (length == 0) {
+                SXRelease(queue->udata);
+            } else {
+                SXSocketSend(sx_runtime_obj_get_sock(queue->udata), data, length);
+            }
         }
-        
-        if (((SXClientRef)(queue->udata))->socket != NULL)
-            SXSocketSend(((SXClientRef)(queue->udata))->socket, string->chars, string->length);
-        
-        SXReleaseString(string);
-        SXReleaseString(domain);
         
         return length;
     });
     
-    // uncomment to use kqueue, which should perform better for
-    // discrete connections.
-    //SXServerStart_kqueue(proxyServer, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), true);
-    
-    // One of the options to start pure-async service,
-    // give you more real-time control over the connection.
-    // however performance will decrease for massive but
-    // short connections due to the overhead to create queue.
-    SXServerStart2(proxyServer, DISPATCH_QUEUE_PRIORITY_HIGH, true);
+    SXServerStart2(server, GCD_HIGH);
     
     while (1) {
-        // keep the process alive, yet put the main
-        // thread to sleep to save energy and cpu usage
-        sleep(100000);
+//        sleep(10000);
     }
-    
-    return 0;
 }

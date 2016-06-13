@@ -63,23 +63,13 @@ typedef struct sx_server
 {
     sx_runtime_items;
     SXServerStatusHandlers;
-    
-//    SXSocketRef socket;
 
-//    __unsafe_unretained block_SXServerDidStart      didStart_block;
-//    __unsafe_unretained block_SXServerShouldConnect shouldConnect_block;
-//    SXServerHandlers_block;
-//    __unsafe_unretained block_SXServerDidKill       didKill_block;
-
-    
     size_t backlog;
     size_t max_guest;
     bool failable;
     
-    void * udata, * udata1;
     SXQueueRef * queues;
 
-    unsigned int ref_count;
 } sx_server_t ;
 
 
@@ -102,16 +92,7 @@ typedef struct sx_server_setup {
 } sx_server_setup;
 
 SXServerRef SXCreateServer          (sx_server_setup setup, SXError * err_ret, didReceive message_handler);
-//
-//void SXServerSetBlockDidStart       (SXServerRef server, block_SXServerDidStart         );
-//void SXServerSetBlockShouldConnect  (SXServerRef server, block_SXServerShouldConnect    );
-//void SXServerSetBlockDidConnect     (SXServerRef server, block_SXServerDidConnect       );
-//void SXServerSetBlockDidReceive     (SXServerRef server, block_SXServerDidReceive       );
-//void SXServerSetBlockDidDisconnect  (SXServerRef server, block_SXServerDidDisconnect    );
-//void SXServerSetBlockWillSuspend    (SXServerRef server, block_SXServerWillSuspend      );
-//void SXServerSetBlockDidResume      (SXServerRef server, block_SXServerDidResume        );
-//void SXServerSetBlockWillKill       (SXServerRef server, block_SXServerWillKill         );
-//void SXServerSetBlockDidKill        (SXServerRef server, block_SXServerDidKill          );
+
 
 #ifdef __DISPATCH_PUBLIC__
 
@@ -127,12 +108,11 @@ SXError SXServerStart1(SXServerRef server,
 
 SXError SXServerStart2(SXServerRef server,
                        dispatch_queue_priority_t priority);
+
+SXError SXServerStart_fork(SXServerRef server);
 #endif
 
 SXError SXFreeServer    (SXServerRef);
 SXError SXKillServer    (SXServerRef);
-
-//SXError SXSuspendServer (SXServerRef);
-//SXError SXResumeServer  (SXServerRef);
 
 #endif /* SXServer_h */

@@ -81,22 +81,31 @@ SXClientRef SXCreateClientWithIp(const char * ip,
 
 SXError SXStartClient(SXClientRef client, void * initialPayload, size_t len) {
     SXError err;
+    
     if ((err = SXSocketConnect(client->sock)) != SX_SUCCESS)
         return err;
-
+    
+    if (initialPayload != NULL)
+        SXSocketSend(client->sock, initialPayload, len);
+    
+    __block size_t s = 0;
+    client->status = sx_status_running;
+//    printf("%s\n", inet_ntoa(((struct sockaddr_in *)(&client->sock->addr))->sin_addr));
     dispatch_async(dispatch_get_global_queue(client->priority, 0), ^{
-        client->status = sx_status_running;
-        
-        size_t s = 0;
+
         bool suspended = false;
         
         do {
             memset(client->buf, 0, sizeof(sx_byte) * client->dataSize);
             switch (client->status) {
                 case sx_status_running:
-                    s = recv(client->sock->sockfd,client->buf, client->dataSize, client->recvFlags);
-                    if (s == -1 || 0 || client == NULL)
+                    
+                    s = recv(client->sock->sockfd,client->buf, client->dataSize, 0);
+                    
+                    if (s == -1 || 0 || client == NULL) {
+                        perror("recv");
                         goto exit;
+                    }
                     if (client->dataHandler_block != NULL)
                         s = client->dataHandler_block(client, client->buf, s);
                     break;
@@ -145,7 +154,7 @@ SXError SXStartClient(SXClientRef client, void * initialPayload, size_t len) {
             client->didDisconnect_block(client);
         SXRelease(client);
     });
-    
+
     return err;
 }
 
