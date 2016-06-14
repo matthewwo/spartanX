@@ -32,94 +32,190 @@
 
 import Foundation
 
-public extension NSData {
-    public func findBytes(bytes b: UnsafeMutablePointer<Void>, offset: Int = 0, len: Int) -> Int? {
-        if offset < 0 || len < 0 || self.length == 0 || len + offset > self.length
-        { return nil }
+#if swift(>=3)
+    public extension Data {
+        public mutating func findBytes(bytes b: UnsafeMutablePointer<Void>, offset: Int = 0, len: Int) -> Int? {
+            if offset < 0 || len < 0 || self.count == 0 || len + offset > self.count
+            { return nil }
+            
+            var i = 0
         
-        var i = 0
-        let mcmp = {memcmp(b, self.bytes.advancedBy(offset + i), len)}
-        
-        
-        while (mcmp() != 0) {
-            if i + offset == self.length {
-                break
+            let mcmp = {memcmp(b,(self as NSData).bytes.advanced(by: offset + i), len)}
+            
+            while (mcmp() != 0) {
+                if i + offset == self.count {
+                    break
+                }
+                i += 1
             }
-            i += 1
+            
+            return i + offset
         }
+    }
+    
+    public struct DataSegment {
+        public var core: Data
+        public var curOffset: Int = 0
+        private var nextOffset: Int = 0
+        private var curlen = 0
         
-        return i + offset
-    }
-}
-
-public struct NSDataSegment {
-    public var core: NSData
-    public var curOffset: Int = 0
-    private var nextOffset: Int = 0
-    private var curlen = 0
-    
-    public var curVal: NSData {
-        get {
-            return core.subdataWithRange(NSMakeRange(curOffset, curlen))
-        }
-    }
-    
-    public var sepearator: [UInt8]
-    
-    public mutating func next() -> NSData? {
-        if let endpoint = core.findBytes(bytes: &sepearator, offset: nextOffset, len: sepearator.count) {
-            curlen = endpoint - nextOffset
-            curOffset = nextOffset
-            nextOffset = sepearator.count + endpoint
-            return curVal
-        }
-        return nil
-    }
-    
-    public mutating func findall(handler: (NSData) -> Bool) {
-        while next() != nil {
-            if !handler(curVal) {
-                break
+        public var curVal: Data {
+            get {
+//                return core.subdata(in: NSMakeRange(curOffset, curlen))
+                return core.subdata(in: core.index(0, offsetBy: curOffset)..<core.index(curOffset, offsetBy: curlen))
             }
         }
-    }
-    
-    public init(core: NSData, sepearatorBytes: [UInt8]) {
-        self.core = core
-        self.sepearator = sepearatorBytes
-    }
-}
-
-extension String {
-    var cInt8String: [Int8]? {
-        get {
-            guard let uint8string = self.cStringUsingEncoding(NSASCIIStringEncoding) else {return nil}
-            return uint8string.map({Int8($0)})
+        
+        public var sepearator: [UInt8]
+        
+        public mutating func next() -> Data? {
+            if let endpoint = core.findBytes(bytes: &sepearator, offset: nextOffset, len: sepearator.count) {
+                curlen = endpoint - nextOffset
+                curOffset = nextOffset
+                nextOffset = sepearator.count + endpoint
+                return curVal
+            }
+            return nil
+        }
+        
+        public mutating func findall(_ handler: (Data) -> Bool) {
+            while next() != nil {
+                if !handler(curVal) {
+                    break
+                }
+            }
+        }
+        
+        public init(core: Data, sepearatorBytes: [UInt8]) {
+            self.core = core
+            self.sepearator = sepearatorBytes
         }
     }
-}
-
-extension String {
-    init (bytes: UnsafeMutablePointer<UInt8>, len: size_t) {
-        self = String((0..<len).map({Character(UnicodeScalar(bytes[$0]))}))
-    }
-    init (bytes: UnsafeMutablePointer<Int8>, len: size_t) {
-        self = String((0..<len).map({Character(UnicodeScalar(UInt8(bytes[$0])))}))
+    
+    extension String {
+        var cInt8String: [Int8]? {
+            get {
+                guard let uint8string = self.cString(using: String.Encoding.ascii) else {return nil}
+                return uint8string.map({Int8($0)})
+            }
+        }
     }
     
-    static var errno: String {
-        let err = strerror(Darwin.errno)
-        return String(bytes: err, len: Int(strlen(err)))
+    extension String {
+        init (bytes: UnsafeMutablePointer<UInt8>, len: size_t) {
+            self = String((0..<len).map({Character(UnicodeScalar(bytes[$0]))}))
+        }
+        init (bytes: UnsafeMutablePointer<Int8>, len: size_t) {
+            self = String((0..<len).map({Character(UnicodeScalar(UInt8(bytes[$0])))}))
+        }
+        
+        static var errno: String {
+            let err = strerror(Darwin.errno)
+            return String(bytes: err!, len: Int(strlen(err)))
+        }
     }
-}
+    
+    
+    func getpointer<T>(_ obj: inout T) -> UnsafePointer<T> {
+        let ghost: (UnsafePointer<T>) -> UnsafePointer<T> = {$0}
+        return withUnsafePointer(&obj, {ghost($0)})
+    }
+    
+    func getMutablePointer<T>(_ obj: inout T) -> UnsafeMutablePointer<T> {
+        let ghost: (UnsafeMutablePointer<T>) -> UnsafeMutablePointer<T> = {$0}
+        return withUnsafeMutablePointer(&obj, {ghost($0)})
+    }
+#else
+    public extension NSData {
+        public func findBytes(bytes b: UnsafeMutablePointer<Void>, offset: Int = 0, len: Int) -> Int? {
+            if offset < 0 || len < 0 || self.length == 0 || len + offset > self.length
+            { return nil }
+            
+            var i = 0
+            let mcmp = {memcmp(b, self.bytes.advancedBy(offset + i), len)}
+            
+            
+            while (mcmp() != 0) {
+                if i + offset == self.length {
+                    break
+                }
+                i += 1
+            }
+            
+            return i + offset
+        }
+    }
+    
+    public struct NSDataSegment {
+        public var core: NSData
+        public var curOffset: Int = 0
+        private var nextOffset: Int = 0
+        private var curlen = 0
+        
+        public var curVal: NSData {
+            get {
+                return core.subdataWithRange(NSMakeRange(curOffset, curlen))
+            }
+        }
+        
+        public var sepearator: [UInt8]
+        
+        public mutating func next() -> NSData? {
+            if let endpoint = core.findBytes(bytes: &sepearator, offset: nextOffset, len: sepearator.count) {
+                curlen = endpoint - nextOffset
+                curOffset = nextOffset
+                nextOffset = sepearator.count + endpoint
+                return curVal
+            }
+            return nil
+        }
+        
+        public mutating func findall(handler: (NSData) -> Bool) {
+            while next() != nil {
+                if !handler(curVal) {
+                    break
+                }
+            }
+        }
+        
+        public init(core: NSData, sepearatorBytes: [UInt8]) {
+            self.core = core
+            self.sepearator = sepearatorBytes
+        }
+    }
+    
+    extension String {
+        var cInt8String: [Int8]? {
+            get {
+                guard let uint8string = self.cStringUsingEncoding(NSASCIIStringEncoding) else {return nil}
+                return uint8string.map({Int8($0)})
+            }
+        }
+    }
+    
+    extension String {
+        init (bytes: UnsafeMutablePointer<UInt8>, len: size_t) {
+            self = String((0..<len).map({Character(UnicodeScalar(bytes[$0]))}))
+        }
+        init (bytes: UnsafeMutablePointer<Int8>, len: size_t) {
+            self = String((0..<len).map({Character(UnicodeScalar(UInt8(bytes[$0])))}))
+        }
+        
+        static var errno: String {
+            let err = strerror(Darwin.errno)
+            return String(bytes: err, len: Int(strlen(err)))
+        }
+    }
+    
+    
+    func getpointer<T>(inout obj: T) -> UnsafePointer<T> {
+        let ghost: (UnsafePointer<T>) -> UnsafePointer<T> = {$0}
+        return withUnsafePointer(&obj, {ghost($0)})
+    }
+    
+    func getMutablePointer<T>(inout obj: T) -> UnsafeMutablePointer<T> {
+        let ghost: (UnsafeMutablePointer<T>) -> UnsafeMutablePointer<T> = {$0}
+        return withUnsafeMutablePointer(&obj, {ghost($0)})
+    }
 
-
-func getpointer<T>(inout obj: T) -> UnsafePointer<T> {
-    let ghost: (UnsafePointer<T>) -> UnsafePointer<T> = {$0}
-    return withUnsafePointer(&obj, {ghost($0)})
-}
-
-func getMutablePointer<T>(inout obj: T) -> UnsafeMutablePointer<T> {
-    let ghost: (UnsafeMutablePointer<T>) -> UnsafeMutablePointer<T> = {$0}
-    return withUnsafeMutablePointer(&obj, {ghost($0)})
-}
+#endif

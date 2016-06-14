@@ -32,19 +32,26 @@
 
 import Foundation
 
-public enum SXSocketError: ErrorType {
-    case NonImplementedDomain
-    case Socket(String)
-    case SetSockOpt(String)
-    case Bind(String)
-    case Connect(String)
-    case Recv(String)
-    case Listen(String)
+#if swift(>=3)
+    
+#else
+    public typealias ErrorProtocol = ErrorType
+    public typealias Data = NSMutableData
+#endif
+
+public enum SXSocketError: ErrorProtocol {
+    case nonImplementedDomain
+    case socket(String)
+    case setSockOpt(String)
+    case bind(String)
+    case connect(String)
+    case recv(String)
+    case listen(String)
 }
 
-public enum SXAddrError: ErrorType {
-    case GetAddrInfo(String)
-    case UnknownDomain
+public enum SXAddrError: ErrorProtocol {
+    case getAddrInfo(String)
+    case unknownDomain
 }
 
 public enum SXSocketDomains: UInt8 {

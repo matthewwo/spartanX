@@ -56,7 +56,11 @@ public protocol SXServer : SXServerType {
     var delegate: SXServerEventDelegate? { get set }
     var method: SXRuntimeDataMethods { get set }
     
+    #if swift(>=3)
+    func start(listenQueue: (() -> DispatchQueue), operateQueue: (() -> DispatchQueue))
+    #else
     func start(listenQueue: (() -> dispatch_queue_t), operateQueue: (() -> dispatch_queue_t))
+    #endif
 }
 
 public class SXStreamServer: SXServerType {
@@ -74,7 +78,7 @@ public class SXStreamServer: SXServerType {
     public var sendFlag: Int32 = 0
     
     public func statusDidChange(status: SXStatus) {
-        self.delegate?.objectDidChangeStatus(self, status: status)
+        self.delegate?.objectDidChangeStatus(object: self, status: status)
     }
     
     public func close() {
@@ -92,7 +96,7 @@ public class SXStreamServer: SXServerType {
     }
     
     
-    public init(port: in_port_t, domain: SXSocketDomains, protocol: Int32 = 0, maxGuest: Int, backlog: Int, bufsize: Int = 16384, handler: (object: SXQueue, data: NSMutableData) -> Bool, errHandler: ((object: SXRuntimeObject, err: ErrorType) -> ())? = nil) throws {
+    public init(port: in_port_t, domain: SXSocketDomains, protocol: Int32 = 0, maxGuest: Int, backlog: Int, bufsize: Int = 16384, handler: (object: SXQueue, data: Data) -> Bool, errHandler: ((object: SXRuntimeObject, err: ErrorProtocol) -> ())? = nil) throws {
         self.status = .IDLE
         self.socket = try SXServerSocket.init(port: port, domain: domain, type: .SOCK_STREAM, protocol: `protocol`, bufsize: bufsize)
         self.port = port
@@ -105,6 +109,72 @@ public class SXStreamServer: SXServerType {
         self.method = SXRuntimeDataMethods.block(dd)
     }
     
+    #if swift(>=3)
+
+    public func start() {
+        self.start(listeningQueue: {DispatchQueue.global()}, operatingQueue: {DispatchQueue.global()})
+    }
+//
+    
+    public func start(listeningQueue: (() -> DispatchQueue), operatingQueue: (()->DispatchQueue)) {
+        
+        listeningQueue().async() {
+            self.status = .RUNNING
+            var count = 0
+            do {
+                while self.status != .SHOULD_TERMINATE {
+                    
+                    try self.socket.listen(backlog: self.backlog)
+                    
+                    if self.status == .SHOULD_TERMINATE {
+                        break
+                    } else if self.status == .SUSPENDED {
+                        continue
+                    }
+                    
+                    do {
+                        
+                        let socket = try SXRemoteStreamSocket(socket: try self.socket.accept(bufsize: self.bufsize))
+                        if count >= self.maxGuest {
+                            count += 1
+                            continue
+                        }
+                        
+                        if let handler = self.delegate?.serverShouldConnect(server: self, withSocket: socket) {
+                            if !handler {
+                                socket.close()
+                                continue
+                            }
+                        }
+                        
+                        var queue: SXStreamQueue = SXStreamQueue(server: self, socket: socket, method: self.method)
+                        
+                        queue.delegate = self.delegate
+                        
+                        operatingQueue().async() {
+                            queue.start(completion: {
+                                queue.close()
+                                queue.delegate?.objectDidDisconnect(object: queue, withSocket: queue.socket)
+                                count -= 1
+                            })
+                        }
+                        
+                    } catch {
+                        self.method.didReceiveError(object: self, err: error)
+                        continue
+                    }
+                }
+                
+                self.status = .IDLE
+                self.close()
+                self.delegate?.serverDidKill(server: self)
+                
+            } catch {
+                self.method.didReceiveError(object: self, err: error)
+            }
+        }
+    }
+    #else
     public func start(listenQueue: dispatch_queue_priority_t, operateQueue: dispatch_queue_priority_t) {
         self.start({dispatch_get_global_queue(listenQueue, 0)}, operatingQueue: {dispatch_get_global_queue(operateQueue, 0)})
     }
@@ -172,4 +242,5 @@ public class SXStreamServer: SXServerType {
             }
         }
     }
+    #endif
 }

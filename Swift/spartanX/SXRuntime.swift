@@ -61,8 +61,8 @@ public protocol SXServerEventDelegate : SXRuntimeStreamObjectDelegate {
 }
 
 public protocol SXRuntimeDataDelegate {
-    func didReceiveData(object: SXRuntimeObject, data: NSMutableData) -> Bool
-    func didReceiveError(object: SXRuntimeObject, err: ErrorType)
+    func didReceiveData(object: SXRuntimeObject, data: Data) -> Bool
+    func didReceiveError(object: SXRuntimeObject, err: ErrorProtocol)
 }
 
 public protocol SXRuntimeStreamObjectDelegate : SXRuntimeObjectDelegate {
@@ -76,27 +76,27 @@ public protocol SXRuntimeObjectDelegate {
 }
 
 public struct SXRuntimeDataHandlerBlocks {
-    var didReceiveDataHandler: ((object: SXRuntimeObject, data: NSMutableData) -> Bool)
-    var didReceiveErrorHandler: ((object: SXRuntimeObject, err: ErrorType) -> ())?
+    var didReceiveDataHandler: ((object: SXRuntimeObject, data: Data) -> Bool)
+    var didReceiveErrorHandler: ((object: SXRuntimeObject, err: ErrorProtocol) -> ())?
 }
 
 public enum SXRuntimeDataMethods {
     case delegate(SXRuntimeDataDelegate)
     case block(SXRuntimeDataHandlerBlocks)
     
-    func didReceiveData(object: SXRuntimeObject, data: NSMutableData) -> Bool {
+    func didReceiveData(object: SXRuntimeObject, data: Data) -> Bool {
         switch self {
         case let .delegate(delegate):
-            return delegate.didReceiveData(object, data: data)
+            return delegate.didReceiveData(object: object, data: data)
         case let .block(block):
             return block.didReceiveDataHandler(object: object, data: data)
         }
     }
     
-    func didReceiveError(object: SXRuntimeObject, err: ErrorType) {
+    func didReceiveError(object: SXRuntimeObject, err: ErrorProtocol) {
         switch self {
         case let .delegate(delegate):
-            delegate.didReceiveError(object, err: err)
+            delegate.didReceiveError(object: object, err: err)
         case let .block(block):
             block.didReceiveErrorHandler?(object: object, err: err)
         }

@@ -47,7 +47,7 @@ public class SXStreamQueue: SXQueue {
     public var recvFlag: Int32 = 0
     public var sendFlag: Int32 = 0
     
-    public init(server: SXStreamServer, socket: SXRemoteStreamSocket, handler: (object: SXQueue, data: NSMutableData) -> Bool, errHandler: ((object: SXRuntimeObject, err: ErrorType) -> ())?) {
+    public init(server: SXStreamServer, socket: SXRemoteStreamSocket, handler: (object: SXQueue, data: Data) -> Bool, errHandler: ((object: SXRuntimeObject, err: ErrorProtocol) -> ())?) {
         
         self.recvFlag = server.recvFlag
         self.recvFlag = server.recvFlag
@@ -88,8 +88,8 @@ public class SXStreamQueue: SXQueue {
         self.status = status
     }
     
-    public func getData(flags: Int32 = 0) throws -> NSMutableData {
-        return try self.socket.receive(self.socket.bufsize, flags: flags)
+    public func getData(flags: Int32 = 0) throws -> Data {
+        return try self.socket.receive(size: self.socket.bufsize, flags: flags)
     }
     
     public func close() {
@@ -103,8 +103,12 @@ public protocol SXQueue : SXRuntimeObject , SXRuntimeController {
     var binded: [SXRuntimeObject] {get set}
     var method: SXRuntimeDataMethods {get set}
     var delegate: SXRuntimeStreamObjectDelegate? {get set}
-    func getData(flags: Int32) throws -> NSMutableData
+    func getData(flags: Int32) throws -> Data
+    #if swift(>=3)
+    mutating func bindobj(obj: inout SXRuntimeObject)
+    #else
     mutating func bindobj(inout obj: SXRuntimeObject)
+    #endif
     mutating func start(completion: () -> ())
 }
 
@@ -147,12 +151,12 @@ extension SXQueue {
             
             func handleData() {
                 do {
-                    let data = try self.getData(self.recvFlag)
-                    let proceed = self.method.didReceiveData(self, data: data)
-                    s = proceed ? data.length : 0
+                    let data = try self.getData(flags: self.recvFlag)
+                    let proceed = self.method.didReceiveData(object: self, data: data)
+                    s = proceed ? data.count : 0
                 } catch {
                     s = 0
-                    self.method.didReceiveError(self, err: error)
+                    self.method.didReceiveError(object: self, err: error)
                 }
             }
             
@@ -163,20 +167,24 @@ extension SXQueue {
                 
             case .RESUMMING:
                 self.status = .RUNNING
-                self.statusDidChange(self.status)
+                self.statusDidChange(status: self.status)
                 
             case .SUSPENDED:
                 if !suspended {
-                    self.statusDidChange(self.status)
+                    self.statusDidChange(status: self.status)
                 }
                 suspended = true
                 
                 do {
-                    let data = try getData(0)
+                    let data = try getData(flags: 0)
+                    #if swift(>=3)
+                    if (data.count == 0 || data.count == -1) { s = 0 }
+                    #else
                     if (data.length == 0 || data.length == -1) { s = 0 }
+                    #endif
                 } catch {
                     s = 0
-                    self.method.didReceiveError(self, err: error)
+                    self.method.didReceiveError(object: self, err: error)
                 }
             
                 switch self.status {
@@ -187,8 +195,8 @@ extension SXQueue {
                 }
             case .SHOULD_TERMINATE, .IDLE:
                 
-                self.delegate?.objectWillKill(self)
-                self.statusDidChange(self.status)
+                self.delegate?.objectWillKill(object: self)
+                self.statusDidChange(status: self.status)
             }
             
         } while (s > 0)
@@ -196,8 +204,15 @@ extension SXQueue {
         completion()
     }
     
+    #if swift(>=3)
+    public mutating func bindobj(obj: inout SXRuntimeObject) {
+        self.binded.append(obj)
+        obj.owner = self
+    }
+    #else
     public mutating func bindobj(inout obj: SXRuntimeObject) {
         self.binded.append(obj)
         obj.owner = self
     }
+    #endif
 }

@@ -32,6 +32,20 @@
 
 import Foundation
 
+#if swift(>=3)
+    extension Data {
+        var bytes: [UInt8] {
+            var a = [UInt8](repeating: 0, count: count)
+            self.copyBytes(to: &a, count: count)
+            return a
+        }
+        
+        var length: Int {
+            return count
+        }
+    }
+#endif
+
 public protocol SXBindedSocket {
     var address: SXSockaddr {get set}
 }
@@ -58,7 +72,7 @@ public extension SXBindedSocket where Self : SXLocalSocket {
         
         var yes = true
         if setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, UInt32(sizeof(Int32))) == -1 {
-            throw SXSocketError.SetSockOpt(String.errno)
+            throw SXSocketError.setSockOpt(String.errno)
         }
         
         switch address {
@@ -69,7 +83,7 @@ public extension SXBindedSocket where Self : SXLocalSocket {
             i = Darwin.bind(sockfd, UnsafePointer<sockaddr>(getpointer(&sock)), socklen_t(sizeof(sockaddr_in6)))
         }
         if i == -1 {
-            throw SXSocketError.Bind(String.errno)
+            throw SXSocketError.bind(String.errno)
         }
     }
     
@@ -89,21 +103,31 @@ public extension SXBindedSocket where Self : SXLocalSocket {
     
     public func listen(backlog: Int) throws {
         if Darwin.listen(sockfd, Int32(backlog)) == -1 {
-            throw SXSocketError.Listen(String.errno)
+            throw SXSocketError.listen(String.errno)
         }
     }
 }
 
 public extension SXStreamProtocol where Self : SXSocket {
     
-    func receive(size: Int, flags: Int32) throws -> NSMutableData {
+    func receive(size: Int, flags: Int32) throws -> Data {
+        #if swift(>=3)
+        var buffer = [UInt8](repeating: 0, count: size)
+        #else
         var buffer = [UInt8](count: size, repeatedValue: 0)
+        #endif
         let len = recv(sockfd, &buffer, size, flags)
-        if len == -1 {throw SXSocketError.Recv(String.errno)}
+        if len == -1 {throw SXSocketError.recv(String.errno)}
+        #if swift(>=3)
+        return Data(bytes: buffer, count: len)
+        #else
         return NSMutableData(bytes: buffer, length: len)
+        #endif
     }
     
-    func send(data: NSData, flags: Int32) {
+
+    
+    func send(data: Data, flags: Int32) {
         Darwin.send(sockfd, data.bytes, data.length, flags)
     }
 }
@@ -124,27 +148,43 @@ public extension SXStreamProtocol where Self : SXLocalSocket {
         
         if i == -1 {
             print(String.errno)
-            throw SXSocketError.Connect(String.errno)
+            throw SXSocketError.connect(String.errno)
         }
     }
 }
 
 public extension SXDGRAMProtocol where Self : SXSocket {
+    #if swift(>=3)
+    public func recvFrom(addr: SXSockaddr, flags: Int32 = 0) -> Data {
+        var addr_ = addr // since the expression var addr: SXSockaddr is not compatible with Swift 3
+        var socklen = addr.socklen
+      
+        var buf = [UInt8](repeating: 0, count: bufsize)
+
+        let len = recvfrom(sockfd, &buf, bufsize, flags, UnsafeMutablePointer<sockaddr>(getMutablePointer(&addr_)), &socklen)
+        
+        return Data(bytes: buf, count: len)
+    }
+    #else
     public func recvFrom(addr: SXSockaddr, flags: Int32 = 0) -> NSData {
         var addr_ = addr // since the expression var addr: SXSockaddr is not compatible with Swift 3
         var socklen = addr.socklen
         var buf = [UInt8](count: bufsize, repeatedValue: 0)
+    
         let len = recvfrom(sockfd, &buf, bufsize, flags, UnsafeMutablePointer<sockaddr>(getMutablePointer(&addr_)), &socklen)
         return NSData(bytes: buf, length: len)
     }
+    #endif
     
-    public func sendTo(addr: SXSockaddr, data: NSData, flags: Int32 = 0) {
+    public func sendTo(addr: SXSockaddr, data: Data, flags: Int32 = 0) {
         var addr_ = addr
-        sendto(sockfd, data.bytes, data.length, flags, UnsafeMutablePointer<sockaddr>(getMutablePointer(&addr_)), addr_.socklen)
+        sendto(sockfd, data.bytes, data.count, flags, UnsafeMutablePointer<sockaddr>(getMutablePointer(&addr_)), addr_.socklen)
     }
     
-    public func boardcast(port: in_port_t, data: NSData, flags: Int32 = 0) throws {
-        let addr = try SXSockaddr.boardcastAddr(port)
-        sendTo(addr, data: data, flags: flags)
+
+    public func boardcast(port: in_port_t, data: Data, flags: Int32 = 0) throws {
+        let addr = try SXSockaddr.boardcastAddr(port: port)
+        sendTo(addr: addr, data: data, flags: flags)
     }
+
 }

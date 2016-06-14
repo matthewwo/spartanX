@@ -57,17 +57,17 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
     public var status: SXStatus = .IDLE
     
     public func statusDidChange(status: SXStatus) {
-        self.delegate?.objectDidChangeStatus(self, status: status)
+        self.delegate?.objectDidChangeStatus(object: self, status: status)
     }
 
     /* SXStreamProtocol */
     public var addr: SXSockaddr? /* target */
     public var delegate: SXRuntimeObjectDelegate?
 
-    public init(hostname: String, service: String, protocol: Int32 = 0, bufsize: Int = 16384,handler: ((object: SXRuntimeObject, data: NSData) -> Bool)) throws {
+    public init(hostname: String, service: String, protocol: Int32 = 0, bufsize: Int = 16384,handler: ((object: SXRuntimeObject, data: Data) -> Bool)) throws {
         self.method = .block(SXRuntimeDataHandlerBlocks(didReceiveDataHandler: handler, didReceiveErrorHandler: nil))
-        guard let addr = try SXSockaddr.DNSLookup(hostname, service: service) else {throw SXAddrError.UnknownDomain}
-        guard let domain = addr.resolveDomain() else {throw SXAddrError.UnknownDomain }
+        guard let addr = try SXSockaddr.DNSLookup(hostname: hostname, service: service) else {throw SXAddrError.unknownDomain}
+        guard let domain = addr.resolveDomain() else {throw SXAddrError.unknownDomain }
 
         self.addr = addr /* SXStreamProtocol */
         
@@ -80,12 +80,12 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
         self.bufsize = bufsize
         
         self.sockfd = socket(Int32(domain.rawValue), type.rawValue, `protocol`)
-        if self.sockfd == -1 {throw SXSocketError.Socket(String.errno)}
+        if self.sockfd == -1 {throw SXSocketError.socket(String.errno)}
     }
 
-    public init(ip: String, port: in_port_t, domain: SXSocketDomains, `protocol`: Int32 = 0, bufsize: Int = 16384, handler: ((object: SXRuntimeObject, data: NSData) -> Bool)) throws {
+    public init(ip: String, port: in_port_t, domain: SXSocketDomains, `protocol`: Int32 = 0, bufsize: Int = 16384, handler: ((object: SXRuntimeObject, data: Data) -> Bool)) throws {
         self.method = .block(SXRuntimeDataHandlerBlocks(didReceiveDataHandler: handler, didReceiveErrorHandler: nil))
-        guard let addr = SXSockaddr(address: ip, withDomain: domain, port: port) else {throw SXAddrError.UnknownDomain}
+        guard let addr = SXSockaddr(address: ip, withDomain: domain, port: port) else {throw SXAddrError.unknownDomain}
         self.addr = addr;
         self.port = 0
         self.domain = domain
@@ -93,13 +93,13 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
         self.bufsize = bufsize
         self.type = SXSocketTypes.SOCK_STREAM
         self.sockfd = socket(Int32(domain.rawValue), type.rawValue, `protocol`)
-        if self.sockfd == -1 {throw SXSocketError.Socket(String.errno)}
+        if self.sockfd == -1 {throw SXSocketError.socket(String.errno)}
     }
 
     public init(hostname: String, service: String, protocol: Int32 = 0, bufsize: Int = 16384, delegate: SXRuntimeDataDelegate) throws {
         self.method = .delegate(delegate)
-        guard let addr = try SXSockaddr.DNSLookup(hostname, service: service) else {throw SXAddrError.UnknownDomain}
-        guard let domain = addr.resolveDomain() else {throw SXAddrError.UnknownDomain }
+        guard let addr = try SXSockaddr.DNSLookup(hostname: hostname, service: service) else {throw SXAddrError.unknownDomain}
+        guard let domain = addr.resolveDomain() else {throw SXAddrError.unknownDomain }
         self.addr = addr;
         self.port = 0
         self.domain = domain
@@ -107,12 +107,12 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
         self.bufsize = bufsize
         self.type = SXSocketTypes.SOCK_STREAM
         self.sockfd = socket(Int32(domain.rawValue), type.rawValue, `protocol`)
-        if self.sockfd == -1 {throw SXSocketError.Socket(String.errno)}
+        if self.sockfd == -1 {throw SXSocketError.socket(String.errno)}
     }
 
     public init(ip: String, port: in_port_t, domain: SXSocketDomains, `protocol`: Int32 = 0, bufsize: Int = 16384, delegate: SXRuntimeDataDelegate) throws {
         self.method = .delegate(delegate)
-        guard let addr = SXSockaddr(address: ip, withDomain: domain, port: port) else {throw SXAddrError.UnknownDomain}
+        guard let addr = SXSockaddr(address: ip, withDomain: domain, port: port) else {throw SXAddrError.unknownDomain}
         self.addr = addr;
         self.port = 0
         self.domain = domain
@@ -120,9 +120,77 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
         self.bufsize = bufsize
         self.type = SXSocketTypes.SOCK_STREAM
         self.sockfd = socket(Int32(domain.rawValue), type.rawValue, `protocol`)
-        if self.sockfd == -1 {throw SXSocketError.Socket(String.errno)}
+        if self.sockfd == -1 {throw SXSocketError.socket(String.errno)}
     }
 
+    #if swift(>=3)
+    public func start(_ queue: DispatchQueue, initialPayload: Data?) {
+        do {
+            try self.connect()
+            
+            
+            if let payload = initialPayload {
+                self.send(data: payload, flags: 0)
+            }
+            
+            var s = 0
+            var suspended = false
+            self.status = .RUNNING
+
+            queue.async() {
+                repeat {
+                    if let owner = self.owner {
+                        if owner.status != .RUNNING {
+                            self.status = owner.status
+                        }
+                    }
+                    
+                    func handleData() {
+                        do {
+                            let data = try self.receive(size: self.bufsize, flags: 0)
+                            let proceed = self.method.didReceiveData(object: self, data: data)
+                            s = proceed ? data.length : 0
+                        } catch {
+                            self.method.didReceiveError(object: self, err: error)
+                            s = 0
+                        }
+                    }
+                    
+                    switch self.status {
+                    case .RUNNING:
+                        handleData()
+                        
+                    case .RESUMMING:
+                        self.status = .RUNNING
+                        self.statusDidChange(status: self.status)
+                        
+                    case .SUSPENDED:
+                        if !suspended {
+                            self.statusDidChange(status: self.status)
+                        }
+                        suspended = true
+                        
+                        let data = try? self.receive(size: self.bufsize, flags: 0)
+                        if (data == nil || data?.length == 0 || data?.length == -1) { s = 0 }
+                        
+                        switch self.status {
+                        case .SHOULD_TERMINATE, .IDLE:
+                            s = 0
+                        case .RUNNING, .RESUMMING:
+                            handleData()
+                        default: break
+                        }
+                    case .SHOULD_TERMINATE, .IDLE:
+                        self.statusDidChange(status: self.status)
+                    }
+                } while (s > 0)
+                self.close()
+            }
+        } catch {
+            self.method.didReceiveError(object: self, err: error)
+        }
+    }
+    #else
     public func start(queue: dispatch_queue_t, initialPayload: NSData?) {
         do {
             try self.connect()
@@ -188,9 +256,10 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
             self.method.didReceiveError(self, err: error)
         }
     }
+    #endif
     
-    public func close() {
+    public func close() -> Int32 {
         self.owner = nil
-        Darwin.close(self.sockfd)
+        return Darwin.close(self.sockfd)
     }
 }

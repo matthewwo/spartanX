@@ -17,5 +17,164 @@
             endingLineNumber = "74">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "spartanX/SXServer.swift"
+            timestampString = "487596645.825681"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "141"
+            endingLineNumber = "141"
+            landmarkName = "start(listeningQueue:operatingQueue:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "spartanX.SXStreamServer.(start (listeningQueue : () -&gt; __ObjC.DispatchQueue, operatingQueue : () -&gt; __ObjC.DispatchQueue) -&gt; ()).(closure #1)"
+                  moduleName = "spartanX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yuuji/Documents/spartanX/Swift/spartanX/SXServer.swift"
+                  timestampString = "487596763.856458"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "143"
+                  endingLineNumber = "143"
+                  offsetFromSymbolStart = "887">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "spartanX.SXStreamServer.(start (listeningQueue : () -&gt; __ObjC.DispatchQueue, operatingQueue : () -&gt; __ObjC.DispatchQueue) -&gt; ()).(closure #1)"
+                  moduleName = "spartanX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yuuji/Documents/spartanX/Swift/spartanX/SXServer.swift"
+                  timestampString = "487596763.860066"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "143"
+                  endingLineNumber = "143"
+                  offsetFromSymbolStart = "1361">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "spartanX/SXServer.swift"
+            timestampString = "487596646.401756"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "145"
+            endingLineNumber = "145"
+            landmarkName = "start(listeningQueue:operatingQueue:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "spartanX/SXServer.swift"
+            timestampString = "487596646.865445"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "149"
+            endingLineNumber = "149"
+            landmarkName = "start(listeningQueue:operatingQueue:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "spartanX.SXStreamServer.(start (listeningQueue : () -&gt; __ObjC.DispatchQueue, operatingQueue : () -&gt; __ObjC.DispatchQueue) -&gt; ()).(closure #1)"
+                  moduleName = "spartanX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yuuji/Documents/spartanX/Swift/spartanX/SXServer.swift"
+                  timestampString = "487596763.999238"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "150"
+                  endingLineNumber = "150"
+                  offsetFromSymbolStart = "1482">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "spartanX.SXStreamServer.(start (listeningQueue : () -&gt; __ObjC.DispatchQueue, operatingQueue : () -&gt; __ObjC.DispatchQueue) -&gt; ()).(closure #1).(closure #1)"
+                  moduleName = "spartanX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yuuji/Documents/spartanX/Swift/spartanX/SXServer.swift"
+                  timestampString = "487596764.001661"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "150"
+                  endingLineNumber = "150"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "spartanX.SXStreamServer.(start (listeningQueue : () -&gt; __ObjC.DispatchQueue, operatingQueue : () -&gt; __ObjC.DispatchQueue) -&gt; ()).(closure #1).(closure #1).(closure #1)"
+                  moduleName = "spartanX"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yuuji/Documents/spartanX/Swift/spartanX/SXServer.swift"
+                  timestampString = "487596764.004991"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "150"
+                  endingLineNumber = "150"
+                  offsetFromSymbolStart = "4">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "spartanX/SXServer.swift"
+            timestampString = "487596647.235631"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
+            landmarkName = "start(listeningQueue:operatingQueue:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "spartanX/SXServer.swift"
+            timestampString = "487596773.564966"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "146"
+            endingLineNumber = "146"
+            landmarkName = "start(listeningQueue:operatingQueue:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
