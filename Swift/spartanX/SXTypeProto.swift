@@ -87,7 +87,7 @@ public extension SXBindedSocket where Self : SXLocalSocket {
         }
     }
     
-    public func accept(bufsize: Int = 16384) throws -> SXRemoteSocket {
+    public func accept(bufsize bufsize: Int = 16384) throws -> SXRemoteSocket {
         var addr = sockaddr()
         var socklen = socklen_t()
         let fd = Darwin.accept(sockfd, &addr, &socklen)
@@ -110,7 +110,7 @@ public extension SXBindedSocket where Self : SXLocalSocket {
 
 public extension SXStreamProtocol where Self : SXSocket {
     
-    func receive(size: Int, flags: Int32) throws -> Data {
+    func receive(size size: Int, flags: Int32) throws -> Data {
         #if swift(>=3)
         var buffer = [UInt8](repeating: 0, count: size)
         #else
@@ -127,7 +127,7 @@ public extension SXStreamProtocol where Self : SXSocket {
     
 
     
-    func send(data: Data, flags: Int32) {
+    func send(data data: Data, flags: Int32) {
         Darwin.send(sockfd, data.bytes, data.length, flags)
     }
 }
@@ -155,7 +155,7 @@ public extension SXStreamProtocol where Self : SXLocalSocket {
 
 public extension SXDGRAMProtocol where Self : SXSocket {
     #if swift(>=3)
-    public func recvFrom(addr: SXSockaddr, flags: Int32 = 0) -> Data {
+    public func recvFrom(addr addr: SXSockaddr, flags: Int32 = 0) -> Data {
         var addr_ = addr // since the expression var addr: SXSockaddr is not compatible with Swift 3
         var socklen = addr.socklen
       
@@ -166,7 +166,7 @@ public extension SXDGRAMProtocol where Self : SXSocket {
         return Data(bytes: buf, count: len)
     }
     #else
-    public func recvFrom(addr: SXSockaddr, flags: Int32 = 0) -> NSData {
+    public func recvFrom(addr addr: SXSockaddr, flags: Int32 = 0) -> NSData {
         var addr_ = addr // since the expression var addr: SXSockaddr is not compatible with Swift 3
         var socklen = addr.socklen
         var buf = [UInt8](count: bufsize, repeatedValue: 0)
@@ -176,13 +176,13 @@ public extension SXDGRAMProtocol where Self : SXSocket {
     }
     #endif
     
-    public func sendTo(addr: SXSockaddr, data: Data, flags: Int32 = 0) {
+    public func sendTo(addr addr: SXSockaddr, data: Data, flags: Int32 = 0) {
         var addr_ = addr
-        sendto(sockfd, data.bytes, data.count, flags, UnsafeMutablePointer<sockaddr>(getMutablePointer(&addr_)), addr_.socklen)
+        sendto(sockfd, data.bytes, data.length, flags, UnsafeMutablePointer<sockaddr>(getMutablePointer(&addr_)), addr_.socklen)
     }
     
 
-    public func boardcast(port: in_port_t, data: Data, flags: Int32 = 0) throws {
+    public func boardcast(port port: in_port_t, data: Data, flags: Int32 = 0) throws {
         let addr = try SXSockaddr.boardcastAddr(port: port)
         sendTo(addr: addr, data: data, flags: flags)
     }

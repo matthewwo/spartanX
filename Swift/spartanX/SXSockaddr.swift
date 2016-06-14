@@ -35,7 +35,7 @@ import Foundation
 #if swift(>=3)
 #else
     extension UnsafeMutablePointer {
-        var pointeee: Memory {
+        var pointee: Memory {
             get {
                 return self.memory
             } set {
@@ -87,7 +87,7 @@ public enum SXSockaddr {
         }
     }
     
-    public init(addr_: sockaddr, socklen: socklen_t) throws {
+    public init(_ addr_: sockaddr, socklen: socklen_t) throws {
         var addr = addr_
         switch socklen {
         case UInt32(sizeof(sockaddr_in)):
@@ -101,7 +101,7 @@ public enum SXSockaddr {
         }
     }
     
-    public static func boardcastAddr(port: in_port_t = 0) throws -> SXSockaddr {
+    public static func boardcastAddr(port port: in_port_t = 0) throws -> SXSockaddr {
         return SXSockaddr(address: "255.255.255.255", withDomain: .INET, port: port)!
     }
     
@@ -252,7 +252,7 @@ public enum SXSockaddr {
         return nil
     }
     #else
-    public static func DNSLookup(hostname: String, service: String, hints: [DNSLookupHint] = []) throws -> SXSockaddr? {
+    public static func DNSLookup(hostname hostname: String, service: String, hints: [DNSLookupHint] = []) throws -> SXSockaddr? {
         
         var info: UnsafeMutablePointer<addrinfo> = nil
         var cinfo: UnsafeMutablePointer<addrinfo> = nil
@@ -276,7 +276,7 @@ public enum SXSockaddr {
                        &hint,
                        &info) != 0 {
             
-            throw SXAddrError.GetAddrInfo(String.errno)
+            throw SXAddrError.getAddrInfo(String.errno)
         }
         
         func clean() {

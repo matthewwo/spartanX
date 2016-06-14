@@ -61,7 +61,6 @@ import Foundation
         
         public var curVal: Data {
             get {
-//                return core.subdata(in: NSMakeRange(curOffset, curlen))
                 return core.subdata(in: core.index(0, offsetBy: curOffset)..<core.index(curOffset, offsetBy: curlen))
             }
         }
@@ -126,7 +125,7 @@ import Foundation
         return withUnsafeMutablePointer(&obj, {ghost($0)})
     }
 #else
-    public extension NSData {
+    public extension Data {
         public func findBytes(bytes b: UnsafeMutablePointer<Void>, offset: Int = 0, len: Int) -> Int? {
             if offset < 0 || len < 0 || self.length == 0 || len + offset > self.length
             { return nil }
@@ -147,20 +146,20 @@ import Foundation
     }
     
     public struct NSDataSegment {
-        public var core: NSData
+        public var core: Data
         public var curOffset: Int = 0
         private var nextOffset: Int = 0
         private var curlen = 0
         
-        public var curVal: NSData {
+        public var curVal: Data {
             get {
-                return core.subdataWithRange(NSMakeRange(curOffset, curlen))
+                return core.subdataWithRange(NSMakeRange(curOffset, curlen)).mutableCopy() as! NSMutableData
             }
         }
         
         public var sepearator: [UInt8]
         
-        public mutating func next() -> NSData? {
+        public mutating func next() -> Data? {
             if let endpoint = core.findBytes(bytes: &sepearator, offset: nextOffset, len: sepearator.count) {
                 curlen = endpoint - nextOffset
                 curOffset = nextOffset
@@ -179,7 +178,7 @@ import Foundation
         }
         
         public init(core: NSData, sepearatorBytes: [UInt8]) {
-            self.core = core
+            self.core = core as! NSMutableData
             self.sepearator = sepearatorBytes
         }
     }

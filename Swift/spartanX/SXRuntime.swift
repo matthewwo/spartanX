@@ -44,7 +44,7 @@ public protocol SXRuntimeObject {
     var status: SXStatus {get set}
     var owner: SXRuntimeObject? {get set}
     
-    func statusDidChange(status: SXStatus)
+    func statusDidChange(status status: SXStatus)
     func close()
 }
 
@@ -61,18 +61,18 @@ public protocol SXServerEventDelegate : SXRuntimeStreamObjectDelegate {
 }
 
 public protocol SXRuntimeDataDelegate {
-    func didReceiveData(object: SXRuntimeObject, data: Data) -> Bool
-    func didReceiveError(object: SXRuntimeObject, err: ErrorProtocol)
+    func didReceiveData(object object: SXRuntimeObject, data: Data) -> Bool
+    func didReceiveError(object object: SXRuntimeObject, err: ErrorProtocol)
 }
 
 public protocol SXRuntimeStreamObjectDelegate : SXRuntimeObjectDelegate {
-    func objectDidConnect(object: SXRuntimeObject, withSocket: SXRemoteSocket)
-    func objectDidDisconnect(object: SXRuntimeObject, withSocket: SXRemoteSocket)
-    func objectWillKill(object: SXRuntimeObject)
+    func objectDidConnect(object object: SXRuntimeObject, withSocket: SXRemoteSocket)
+    func objectDidDisconnect(object object: SXRuntimeObject, withSocket: SXRemoteSocket)
+    func objectWillKill(object object: SXRuntimeObject)
 }
 
 public protocol SXRuntimeObjectDelegate {
-    func objectDidChangeStatus(object: SXRuntimeObject, status: SXStatus)
+    func objectDidChangeStatus(object object: SXRuntimeObject, status: SXStatus)
 }
 
 public struct SXRuntimeDataHandlerBlocks {
@@ -84,7 +84,7 @@ public enum SXRuntimeDataMethods {
     case delegate(SXRuntimeDataDelegate)
     case block(SXRuntimeDataHandlerBlocks)
     
-    func didReceiveData(object: SXRuntimeObject, data: Data) -> Bool {
+    func didReceiveData(object object: SXRuntimeObject, data: Data) -> Bool {
         switch self {
         case let .delegate(delegate):
             return delegate.didReceiveData(object: object, data: data)
@@ -93,7 +93,7 @@ public enum SXRuntimeDataMethods {
         }
     }
     
-    func didReceiveError(object: SXRuntimeObject, err: ErrorProtocol) {
+    func didReceiveError(object object: SXRuntimeObject, err: ErrorProtocol) {
         switch self {
         case let .delegate(delegate):
             delegate.didReceiveError(object: object, err: err)

@@ -118,7 +118,7 @@ public class SXRemoteSocket: SXSocket {
         var caddr = sockaddr()
         var len = socklen_t()
         getsockname(fd, &caddr, &len)
-        self.addr = try SXSockaddr(addr_: caddr, socklen: len)
+        self.addr = try SXSockaddr(caddr, socklen: len)
         self.sockfd = fd
         self.domain = domain
         self.type = type
@@ -129,7 +129,7 @@ public class SXRemoteSocket: SXSocket {
     }
     
     public init(fd: Int32, domain: SXSocketDomains, type: SXSocketTypes, `protocol`: Int32, addr: sockaddr, len: socklen_t, bufsize: Int = 16384) throws {
-        self.addr = try SXSockaddr(addr_: addr, socklen: len)
+        self.addr = try SXSockaddr(addr, socklen: len)
         self.sockfd = fd
         self.domain = domain
         self.type = type

@@ -77,7 +77,7 @@ public class SXStreamServer: SXServerType {
     public var recvFlag: Int32 = 0
     public var sendFlag: Int32 = 0
     
-    public func statusDidChange(status: SXStatus) {
+    public func statusDidChange(status status: SXStatus) {
         self.delegate?.objectDidChangeStatus(object: self, status: status)
     }
     
@@ -202,7 +202,7 @@ public class SXStreamServer: SXServerType {
 
                     do {
 
-                        let socket = try SXRemoteStreamSocket(socket: try self.socket.accept(self.bufsize))
+                        let socket = try SXRemoteStreamSocket(socket: try self.socket.accept(bufsize: self.bufsize))
                         if count >= self.maxGuest {
                             count += 1
                             continue
@@ -222,13 +222,13 @@ public class SXStreamServer: SXServerType {
                         dispatch_async(operatingQueue()) {
                             queue.start({
                                 queue.close()
-                                queue.delegate?.objectDidDisconnect(queue, withSocket: queue.socket)
+                                queue.delegate?.objectDidDisconnect(object: queue, withSocket: queue.socket)
                                 count -= 1
                             })
                         }
 
                     } catch {
-                        self.method.didReceiveError(self, err: error)
+                        self.method.didReceiveError(object: self, err: error)
                         continue
                     }
                 }
@@ -238,7 +238,7 @@ public class SXStreamServer: SXServerType {
                 self.delegate?.serverDidKill(self)
                 
             } catch {
-                self.method.didReceiveError(self, err: error)
+                self.method.didReceiveError(object: self, err: error)
             }
         }
     }

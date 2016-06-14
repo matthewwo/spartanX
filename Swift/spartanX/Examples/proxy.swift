@@ -145,7 +145,7 @@ func proxy_demo() {
                 
                 /* cannot find \r\n */
                 if i == data.length || i == nil {
-                    queue.socket.send(data, flags: 0)
+                    queue.socket.send(data: data, flags: 0)
                     return true
                 }
                 
@@ -166,7 +166,7 @@ func proxy_demo() {
                     guard let suri = String(data: uri!, encoding: NSUTF8StringEncoding)
                         else {
                             /* redirect the raw data */
-                            queue.socket.send(data, flags: 0)
+                            queue.socket.send(data: data as! NSMutableData, flags: 0)
                             return false /* we're done with the payload */
                     }
                     
@@ -189,7 +189,7 @@ func proxy_demo() {
                         /* create a establish a connection to the dest server */
                         /* btw, you should handle the error in real world */
                         client = try! SXStreamClient(hostname: domain, service: "http", handler: { (object, data) -> Bool in
-                            queue.socket.send(data, flags: 0)
+                            queue.socket.send(data: data, flags: 0)
                             return true
                         })
                         
@@ -201,7 +201,7 @@ func proxy_demo() {
                 } else {
                     /* we have our client ready */
                     if let c = queue.binded[0] as? SXStreamClient {
-                        c.send(data, flags: 0)
+                        c.send(data: data, flags: 0)
                     }
                 }
             }

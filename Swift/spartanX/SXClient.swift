@@ -56,7 +56,7 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
     public var owner: SXRuntimeObject?
     public var status: SXStatus = .IDLE
     
-    public func statusDidChange(status: SXStatus) {
+    public func statusDidChange(status status: SXStatus) {
         self.delegate?.objectDidChangeStatus(object: self, status: status)
     }
 
@@ -191,13 +191,13 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
         }
     }
     #else
-    public func start(queue: dispatch_queue_t, initialPayload: NSData?) {
+    public func start(queue: dispatch_queue_t, initialPayload: Data?) {
         do {
             try self.connect()
 
 
             if let payload = initialPayload {
-                self.send(payload, flags: 0)
+                self.send(data: payload, flags: 0)
             }
 
             var s = 0
@@ -213,11 +213,11 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
 
                     func handleData() {
                         do {
-                            let data = try self.receive(self.bufsize, flags: 0)
-                            let proceed = self.method.didReceiveData(self, data: data)
+                            let data = try self.receive(size: self.bufsize, flags: 0)
+                            let proceed = self.method.didReceiveData(object: self, data: data)
                             s = proceed ? data.length : 0
                         } catch {
-                            self.method.didReceiveError(self, err: error)
+                            self.method.didReceiveError(object: self, err: error)
                             s = 0
                         }
                     }
@@ -228,15 +228,15 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
 
                     case .RESUMMING:
                         self.status = .RUNNING
-                        self.statusDidChange(self.status)
+                        self.statusDidChange(status: self.status)
 
                     case .SUSPENDED:
                         if !suspended {
-                            self.statusDidChange(self.status)
+                            self.statusDidChange(status: self.status)
                         }
                         suspended = true
 
-                        let data = try? self.receive(self.bufsize, flags: 0)
+                        let data = try? self.receive(size: self.bufsize, flags: 0)
                         if (data == nil || data?.length == 0 || data?.length == -1) { s = 0 }
 
                         switch self.status {
@@ -247,13 +247,13 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
                         default: break
                         }
                     case .SHOULD_TERMINATE, .IDLE:
-                        self.statusDidChange(self.status)
+                        self.statusDidChange(status: self.status)
                     }
                 } while (s > 0)
                 self.close()
             })
         } catch {
-            self.method.didReceiveError(self, err: error)
+            self.method.didReceiveError(object: self, err: error)
         }
     }
     #endif

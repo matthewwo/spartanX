@@ -47,7 +47,7 @@ public class SXStreamQueue: SXQueue {
     public var recvFlag: Int32 = 0
     public var sendFlag: Int32 = 0
     
-    public init(server: SXStreamServer, socket: SXRemoteStreamSocket, handler: (object: SXQueue, data: Data) -> Bool, errHandler: ((object: SXRuntimeObject, err: ErrorProtocol) -> ())?) {
+    public init(server: SXStreamServer, socket: SXRemoteStreamSocket, handler: (object: SXQueue, data: NSMutableData) -> Bool, errHandler: ((object: SXRuntimeObject, err: ErrorProtocol) -> ())?) {
         
         self.recvFlag = server.recvFlag
         self.recvFlag = server.recvFlag
@@ -84,11 +84,11 @@ public class SXStreamQueue: SXQueue {
         self.method = method
     }
     
-    public func statusDidChange(status: SXStatus) {
+    public func statusDidChange(status status: SXStatus) {
         self.status = status
     }
     
-    public func getData(flags: Int32 = 0) throws -> Data {
+    public func getData(flags flags: Int32 = 0) throws -> Data {
         return try self.socket.receive(size: self.socket.bufsize, flags: flags)
     }
     
@@ -103,7 +103,7 @@ public protocol SXQueue : SXRuntimeObject , SXRuntimeController {
     var binded: [SXRuntimeObject] {get set}
     var method: SXRuntimeDataMethods {get set}
     var delegate: SXRuntimeStreamObjectDelegate? {get set}
-    func getData(flags: Int32) throws -> Data
+    func getData(flags flags: Int32) throws -> Data
     #if swift(>=3)
     mutating func bindobj(obj: inout SXRuntimeObject)
     #else
@@ -153,7 +153,7 @@ extension SXQueue {
                 do {
                     let data = try self.getData(flags: self.recvFlag)
                     let proceed = self.method.didReceiveData(object: self, data: data)
-                    s = proceed ? data.count : 0
+                    s = proceed ? data.length : 0
                 } catch {
                     s = 0
                     self.method.didReceiveError(object: self, err: error)

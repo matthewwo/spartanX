@@ -95,6 +95,11 @@ import Foundation
         }
     }
 #else
+    extension String {
+        func dataUsingEncoding(_ encoding: NSStringEncoding) -> Data {
+            return self.dataUsingEncoding(encoding)! as! NSMutableData
+        }
+    }
     func selectService_demo() {
         
         /* This server recieve raw bytes from
@@ -111,15 +116,15 @@ import Foundation
     }
     
     class BurgerKing: SXRuntimeDataDelegate {
-        func didReceiveError(object: SXRuntimeObject, err: ErrorProtocol) {}
+        func didReceiveError(object object: SXRuntimeObject, err: ErrorProtocol) {}
         
-        func didReceiveData(object: SXRuntimeObject, data: NSMutableData) -> Bool {
+        func didReceiveData(object object: SXRuntimeObject, data: NSMutableData) -> Bool {
             let queue = object as! SXStreamQueue
             print("Received");
             #if swift(>=3)
-                queue.socket.send(data: "Your burger is ready.".dataUsingEncoding(NSASCIIStringEncoding)!, flags: 0)
+                queue.socket.send(data: "Your burger is ready.".dataUsingEncoding(NSASCIIStringEncoding), flags: 0)
             #else
-                queue.socket.send("Your burger is ready.".dataUsingEncoding(NSASCIIStringEncoding)!, flags: 0)
+                queue.socket.send(data: "Your burger is ready.".dataUsingEncoding(NSASCIIStringEncoding), flags: 0)
             #endif
             return true
         }
@@ -127,21 +132,21 @@ import Foundation
     
     class Apple: SXRuntimeDataDelegate, SXRuntimeStreamObjectDelegate {
         
-        func objectWillKill(object: SXRuntimeObject) {}
-        func objectDidChangeStatus(object: SXRuntimeObject, status: SXStatus) {}
+        func objectWillKill(object object: SXRuntimeObject) {}
+        func objectDidChangeStatus(object object: SXRuntimeObject, status: SXStatus) {}
         
         /* this will never call in this case since the connect part is handled by Dispatch() class*/
-        func objectDidConnect(object: SXRuntimeObject, withSocket: SXRemoteSocket) {}
-        func objectDidDisconnect(object: SXRuntimeObject, withSocket: SXRemoteSocket) {
+        func objectDidConnect(object object: SXRuntimeObject, withSocket: SXRemoteSocket) {}
+        func objectDidDisconnect(object object: SXRuntimeObject, withSocket: SXRemoteSocket) {
             print("That guy is gone")
         }
         
-        func didReceiveError(object: SXRuntimeObject, err: ErrorType) {}
+        func didReceiveError(object object: SXRuntimeObject, err: ErrorType) {}
         
-        func didReceiveData(object: SXRuntimeObject, data: NSMutableData) -> Bool {
+        func didReceiveData(object object: SXRuntimeObject, data: NSMutableData) -> Bool {
             let queue = object as! SXStreamQueue
             print("Received");
-            queue.socket.send("Sorry, nothing for you.".dataUsingEncoding(NSASCIIStringEncoding)!, flags: 0)
+            queue.socket.send(data: "Sorry, nothing for you.".dataUsingEncoding(NSASCIIStringEncoding), flags: 0)
             
             return true
         }
@@ -152,9 +157,9 @@ import Foundation
         var apple = Apple()
         var bk = BurgerKing()
         
-        func didReceiveError(object: SXRuntimeObject, err: ErrorType) {}
+        func didReceiveError(object object: SXRuntimeObject, err: ErrorType) {}
         
-        func didReceiveData(object: SXRuntimeObject, data: NSMutableData) -> Bool {
+        func didReceiveData(object object: SXRuntimeObject, data: NSMutableData) -> Bool {
             let queue = object as! SXStreamQueue
             print("Received");
             if let payload_string = String(data: data, encoding: NSASCIIStringEncoding) {
@@ -176,7 +181,7 @@ import Foundation
                     queue.delegate = apple /* for `objectDidDisconnect` */
                 } else {
                     /* Otherwise, Ask the client to make a chose */
-                    queue.socket.send("Please type 'Apple' or 'BurgerKing'".dataUsingEncoding(NSUTF8StringEncoding)!, flags: 0)
+                    queue.socket.send(data: "Please type 'Apple' or 'BurgerKing'".dataUsingEncoding(NSUTF8StringEncoding), flags: 0)
                 }
                 
                 
