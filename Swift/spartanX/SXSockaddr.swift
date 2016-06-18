@@ -32,18 +32,6 @@
 
 import Foundation
 
-#if swift(>=3)
-#else
-    extension UnsafeMutablePointer {
-        var pointee: Memory {
-            get {
-                return self.memory
-            } set {
-                self.memory = newValue
-            }
-        }
-    }
-#endif
 public enum DNSLookupHint {
     case Flags(Int32)
     case Family(Int32)
@@ -135,16 +123,11 @@ public enum SXSockaddr {
                 sin_port: port.bigEndian,
                 sin_addr: in_addr(s_addr: 0),
                 sin_zero: (0,0,0,0,0,0,0,0))
-           #if swift(>=3)
-                inet_pton(AF_INET,
-                      address.cString(using: .ascii),
-                      UnsafeMutablePointer<Void>(getMutablePointer(&sockaddr.sin_addr)))
 
-           #else
-                inet_pton(AF_INET,
-                          address.cStringUsingEncoding(NSASCIIStringEncoding)!,
-                          UnsafeMutablePointer<Void>(getMutablePointer(&sockaddr.sin_addr)))
-            #endif
+            inet_pton(AF_INET,
+                  address.cString(using: .ascii),
+                  UnsafeMutablePointer<Void>(getMutablePointer(&sockaddr.sin_addr)))
+
             self = .INET(sockaddr)
             
         case .INET6:
@@ -154,16 +137,11 @@ public enum SXSockaddr {
                                     sin6_flowinfo: 0,
                                     sin6_addr: in6addr_any,
                                     sin6_scope_id: 0)
-            #if swift(>=3)
-                inet_pton(AF_INET6,
-                          address.cString(using: .ascii),
-                          UnsafeMutablePointer<Void>(getMutablePointer(&sockaddr.sin6_addr)))
-                
-            #else
+   
             inet_pton(AF_INET6,
-                      address.cStringUsingEncoding(NSASCIIStringEncoding)!,
+                      address.cString(using: .ascii),
                       UnsafeMutablePointer<Void>(getMutablePointer(&sockaddr.sin6_addr)))
-            #endif
+
             self = .INET6(sockaddr)
             
         default:
@@ -218,7 +196,7 @@ public enum SXSockaddr {
         while cinfo != nil {
             cinfo = cinfo!.pointee.ai_next
             
-            let port = CFSwapInt16HostToBig(UInt16(getservbyname(service.cString(using: String.Encoding.ascii)!, nil).pointee.s_port)).byteSwapped
+            let port = (UInt16(getservbyname(service.cString(using: String.Encoding.ascii)!, nil).pointee.s_port))
             
             let addr = cinfo!.pointee.ai_addr
             
@@ -286,19 +264,19 @@ public enum SXSockaddr {
         cinfo = info
         
         while cinfo != nil {
-            cinfo = cinfo.memory.ai_next
+            cinfo = cinfo.pointee.ai_next
 
-            let port = CFSwapInt16HostToBig(UInt16(getservbyname(service.cStringUsingEncoding(NSASCIIStringEncoding)!, nil).memory.s_port)).byteSwapped
+            let port = CFSwapInt16HostToBig(UInt16(getservbyname(service.cStringUsingEncoding(NSASCIIStringEncoding)!, nil).pointee.s_port)).byteSwapped
             
-            let addr = cinfo.memory.ai_addr
+            let addr = cinfo.pointee.ai_addr
         
-            switch cinfo.memory.ai_family {
+            switch cinfo.pointee.ai_family {
             case AF_INET:
                 
                 ret = SXSockaddr.INET(  sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
                                                     sin_family: UInt8(AF_INET),
                                                     sin_port: port,
-                                                    sin_addr: UnsafeMutablePointer<sockaddr_in>(addr).memory.sin_addr,
+                                                    sin_addr: UnsafeMutablePointer<sockaddr_in>(addr).pointee.sin_addr,
                                                     sin_zero: (0,0,0,0,0,0,0,0)))
                 clean()
                 return ret
@@ -309,7 +287,7 @@ public enum SXSockaddr {
                                                     sin6_family: UInt8(AF_INET6),
                                                     sin6_port: port,
                                                     sin6_flowinfo: 0,
-                                                    sin6_addr: UnsafeMutablePointer<sockaddr_in6>(addr).memory.sin6_addr,
+                                                    sin6_addr: UnsafeMutablePointer<sockaddr_in6>(addr).pointee.sin6_addr,
                                                     sin6_scope_id: 0))
                 clean()
                 return ret

@@ -184,7 +184,7 @@ public class SXStreamClient: SXClient, SXStreamProtocol {
                         self.statusDidChange(status: self.status)
                     }
                 } while (s > 0)
-                self.close()
+                _ = self.close()
             }
         } catch {
             self.method.didReceiveError(object: self, err: error)

@@ -47,7 +47,7 @@ public class SXStreamQueue: SXQueue {
     public var recvFlag: Int32 = 0
     public var sendFlag: Int32 = 0
     
-    public init(server: SXStreamServer, socket: SXRemoteStreamSocket, handler: (object: SXQueue, data: NSMutableData) -> Bool, errHandler: ((object: SXRuntimeObject, err: ErrorProtocol) -> ())?) {
+    public init(server: SXStreamServer, socket: SXRemoteStreamSocket, handler: (object: SXQueue, data: Data) -> Bool, errHandler: ((object: SXRuntimeObject, err: ErrorProtocol) -> ())?) {
         
         self.recvFlag = server.recvFlag
         self.recvFlag = server.recvFlag
@@ -69,7 +69,7 @@ public class SXStreamQueue: SXQueue {
         self.method = .delegate(delegate)
     }
     
-    public func setDataDelegate(delegate: SXRuntimeDataDelegate) {
+    public func setDataDelegate(delegate delegate: SXRuntimeDataDelegate) {
         self.method = .delegate(delegate)
     }
     
@@ -105,9 +105,9 @@ public protocol SXQueue : SXRuntimeObject , SXRuntimeController {
     var delegate: SXRuntimeStreamObjectDelegate? {get set}
     func getData(flags flags: Int32) throws -> Data
     #if swift(>=3)
-    mutating func bindobj(obj: inout SXRuntimeObject)
+    mutating func bind(obj: inout SXRuntimeObject)
     #else
-    mutating func bindobj(inout obj: SXRuntimeObject)
+    mutating func bind(inout obj obj: SXRuntimeObject)
     #endif
     mutating func start(completion: () -> ())
 }
@@ -205,12 +205,12 @@ extension SXQueue {
     }
     
     #if swift(>=3)
-    public mutating func bindobj(obj: inout SXRuntimeObject) {
+    public mutating func bind(obj obj: inout SXRuntimeObject) {
         self.binded.append(obj)
         obj.owner = self
     }
     #else
-    public mutating func bindobj(inout obj: SXRuntimeObject) {
+    public mutating func bind(inout obj obj: SXRuntimeObject) {
         self.binded.append(obj)
         obj.owner = self
     }

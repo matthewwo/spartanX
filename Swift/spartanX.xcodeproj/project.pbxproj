@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		CE27C84B1D012A4500052A0F /* SXSockaddr.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE27C84A1D012A4500052A0F /* SXSockaddr.swift */; };
-		CE27C84D1D0220D500052A0F /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE27C84C1D0220D500052A0F /* Helper.swift */; };
+		CE27C84D1D0220D500052A0F /* Foundation+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE27C84C1D0220D500052A0F /* Foundation+Helper.swift */; };
+		CE936B591D1546C500922696 /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE936B581D1546C500922696 /* Algorithm.swift */; };
+		CE936B5C1D15892700922696 /* Legacy.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE936B5B1D15892700922696 /* Legacy.swift */; };
 		CEE317721D027AB80021CD82 /* SXRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE317711D027AB80021CD82 /* SXRuntime.swift */; };
 		CEE317741D02A5110021CD82 /* SXClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE317731D02A5110021CD82 /* SXClient.swift */; };
 		CEE317AA1D036D980021CD82 /* SXObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE317A91D036D980021CD82 /* SXObject.swift */; };
@@ -36,7 +38,9 @@
 
 /* Begin PBXFileReference section */
 		CE27C84A1D012A4500052A0F /* SXSockaddr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXSockaddr.swift; sourceTree = "<group>"; };
-		CE27C84C1D0220D500052A0F /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		CE27C84C1D0220D500052A0F /* Foundation+Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Foundation+Helper.swift"; sourceTree = "<group>"; };
+		CE936B581D1546C500922696 /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Algorithm.swift; sourceTree = "<group>"; };
+		CE936B5B1D15892700922696 /* Legacy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Legacy.swift; sourceTree = "<group>"; };
 		CEE317711D027AB80021CD82 /* SXRuntime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXRuntime.swift; sourceTree = "<group>"; };
 		CEE317731D02A5110021CD82 /* SXClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXClient.swift; sourceTree = "<group>"; };
 		CEE317A91D036D980021CD82 /* SXObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SXObject.swift; sourceTree = "<group>"; };
@@ -89,10 +93,12 @@
 				CEE370971D001ECA000AB693 /* SXSocket.swift */,
 				CEE370991D002032000AB693 /* Enums.swift */,
 				CE27C84A1D012A4500052A0F /* SXSockaddr.swift */,
-				CE27C84C1D0220D500052A0F /* Helper.swift */,
+				CE27C84C1D0220D500052A0F /* Foundation+Helper.swift */,
+				CE936B5B1D15892700922696 /* Legacy.swift */,
 				CEE317711D027AB80021CD82 /* SXRuntime.swift */,
 				CEE317A91D036D980021CD82 /* SXObject.swift */,
 				CEE317AD1D036F7D0021CD82 /* SXTypeProto.swift */,
+				CE936B581D1546C500922696 /* Algorithm.swift */,
 			);
 			path = spartanX;
 			sourceTree = "<group>";
@@ -170,10 +176,12 @@
 				CEF55ABB1D09689500D6EADC /* proxy.swift in Sources */,
 				CEE3709A1D002032000AB693 /* Enums.swift in Sources */,
 				CEE317AE1D036F7D0021CD82 /* SXTypeProto.swift in Sources */,
+				CE936B591D1546C500922696 /* Algorithm.swift in Sources */,
+				CE936B5C1D15892700922696 /* Legacy.swift in Sources */,
 				CEE370981D001ECA000AB693 /* SXSocket.swift in Sources */,
 				CEF55ABC1D09689500D6EADC /* selectServiceDemo.swift in Sources */,
 				CEE370941D001E4B000AB693 /* SXServer.swift in Sources */,
-				CE27C84D1D0220D500052A0F /* Helper.swift in Sources */,
+				CE27C84D1D0220D500052A0F /* Foundation+Helper.swift in Sources */,
 				CEE317AA1D036D980021CD82 /* SXObject.swift in Sources */,
 				CEE370961D001EA5000AB693 /* SXQueue.swift in Sources */,
 			);
@@ -268,7 +276,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -276,7 +284,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
