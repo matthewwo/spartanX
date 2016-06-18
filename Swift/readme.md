@@ -14,12 +14,12 @@ perform DNS look up and get ipaddress
 
 ```Swift
 var addr: SXSockaddr = try! SXSockaddr.DNSLookup("www.apple.com", service: "http")!
-var ip: String = addr.getIpaddress.getIpAddress()
+var ip: String = addr.getIpAddress()
 ```
 
 with hints:
 
 ```Swift
 var addr: SXSockaddr = try! SXSockaddr.DNSLookup("www.apple.com", service: "http", hints: [DNSLookupHint.Family(AF_INET), DNSLookupHint.SockType(SOCK_STREAM)]))!
-var ip: String = addr.getIpaddress.getIpAddress()
+var ip: String = addr.getIpAddress()
 ```
