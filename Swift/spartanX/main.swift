@@ -41,5 +41,29 @@ while (true) {
     sleep(100000)
 }
 
+//var bytes: [UInt8] = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x04, 0x10, 0x06, 0x28, 0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0x04, 0x10, 0x06, 0x28, 0x01,0x02,0x03, 0x04]
+//let data = Data(bytes: bytes)
+//
+//var reader = DataReader(fromData: data)
+//var separator: [UInt8] = [0x04, 0x10, 0x06, 0x28]
+////var data1 = reader.nextSegmentOfData(separatedBy: &separator)
+////
+////print(data1)
+////
+////
+////data1 = reader.nextSegmentOfData(separatedBy: &separator)
+////
+////print(data1)
+////
+////data1 = reader.nextSegmentOfData(separatedBy: &separator)
+////
+////print(data1)
+////
+//reader.forallSegments(separatedBy: &separator) { (data) -> Bool in
+//    print(data)
+//    return true
+//}
+//
+
 
 
