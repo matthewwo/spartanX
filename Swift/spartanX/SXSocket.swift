@@ -41,7 +41,7 @@ public protocol SXSocket {
 
 extension SXSocket {
     public func close() {
-        Darwin.close(self.sockfd)
+        _ = Darwin.close(self.sockfd)
     }
 }
 

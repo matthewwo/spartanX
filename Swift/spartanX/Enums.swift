@@ -32,13 +32,6 @@
 
 import Foundation
 
-#if swift(>=3)
-    
-#else
-    public typealias ErrorProtocol = ErrorType
-    public typealias Data = NSMutableData
-#endif
-
 public enum SXSocketError: ErrorProtocol {
     case nonImplementedDomain
     case socket(String)

@@ -114,7 +114,6 @@ public class SXStreamServer: SXServerType {
     public func start() {
         self.start(listeningQueue: {DispatchQueue.global()}, operatingQueue: {DispatchQueue.global()})
     }
-//
     
     public func start(listeningQueue: (() -> DispatchQueue), operatingQueue: (()->DispatchQueue)) {
         
