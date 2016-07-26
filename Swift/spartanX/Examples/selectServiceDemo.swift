@@ -65,7 +65,7 @@ import Foundation
         func didReceiveData(object object: SXRuntimeObject, data: Data) -> Bool {
             let queue = object as! SXStreamQueue
             print("Received");
-            if let payload_string = String(data: data as Data, encoding: .ascii) {
+            if let payload_string = String(data: data as Data, encoding: .ascii).stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) {
                 
                 
                 if payload_string.hasSuffix("BurgerKing") {
